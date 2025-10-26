@@ -409,17 +409,119 @@ INDEX_HTML = """
       }
 
       @media (max-width: 640px) {
+        body {
+          font-size: 16px;
+        }
+
         .app-shell {
           padding: 1rem 1rem 2rem;
+          gap: 1.25rem;
         }
 
         .app-header {
           flex-direction: column;
           align-items: flex-start;
+          gap: 0.75rem;
+        }
+
+        h1 {
+          font-size: clamp(1.85rem, 8vw, 2.4rem);
+        }
+
+        .tagline {
+          font-size: 0.95rem;
         }
 
         .status-badge {
           width: 100%;
+        }
+
+        main.layout {
+          gap: 1rem;
+        }
+
+        .panel {
+          padding: 1rem 1.1rem;
+          border-radius: 18px;
+          gap: 1rem;
+        }
+
+        .table-surface {
+          min-height: 260px;
+          padding: 1rem;
+          border-radius: 18px;
+        }
+
+        .table-overlay {
+          padding: 0.75rem 0.85rem 1rem;
+          gap: 0.85rem;
+        }
+
+        .table-footer {
+          gap: 0.85rem;
+        }
+
+        .bet-controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .bet-controls label {
+          width: 100%;
+        }
+
+        .auth-actions {
+          flex-direction: column;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .auth-actions button,
+        .action-buttons button {
+          width: 100%;
+        }
+
+        .chip-row {
+          justify-content: center;
+        }
+
+        footer {
+          font-size: 0.8rem;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .app-shell {
+          padding: 0.75rem 0.85rem 1.5rem;
+        }
+
+        .status-badge {
+          padding: 0.75rem 1rem;
+        }
+
+        .panel,
+        .table-surface {
+          padding: 0.9rem;
+        }
+
+        .hand-meta h3 {
+          font-size: 0.85rem;
+        }
+
+        .hand-total {
+          font-size: 0.9rem;
+        }
+
+        input {
+          font-size: 0.95rem;
+        }
+
+        button {
+          font-size: 0.95rem;
+          padding: 0.75rem 1rem;
         }
       }
     </style>
