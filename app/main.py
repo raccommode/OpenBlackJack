@@ -141,7 +141,7 @@ def start_game(
     payload: GameStartRequest,
     user: Optional[sqlite3.Row] = Depends(optional_user),
 ) -> GameStateResponse:
-    bet = payload.bet or 0
+    bet = max(0, payload.bet or 0)
     side_bets = {key: max(0, int(value)) for key, value in payload.side_bets.items()}
     balance: Optional[int] = None
     owner_id: Optional[int] = None
@@ -160,15 +160,10 @@ def start_game(
             balance = current_balance - total_wager
         else:
             balance = current_balance
-    else:
-        if bet or any(side_bets.values()):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Guests cannot place bets.")
-        side_bets = {}
-
     session = session_manager.create_session(
-        bet=bet if owner_id else 0,
+        bet=bet,
         owner_id=owner_id,
-        side_bets=side_bets if owner_id else {},
+        side_bets=side_bets,
     )
 
     if session.is_over:

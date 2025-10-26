@@ -15,6 +15,9 @@ INDEX_HTML = """
       name=\"viewport\"
       content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\"
     />
+    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />
+    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\" />
+    <meta name=\"theme-color\" content=\"#020617\" />
     <title>OpenBlackJack Arcade</title>
     <style>
       :root {
@@ -46,6 +49,9 @@ INDEX_HTML = """
 
       body {
         margin: 0;
+        padding: calc(env(safe-area-inset-top) + 0.5rem)
+          clamp(0.75rem, 3vw, 1.5rem)
+          calc(env(safe-area-inset-bottom) + 1.25rem);
         font-family: \"Inter\", \"Segoe UI\", system-ui, -apple-system, sans-serif;
         background: radial-gradient(circle at 20% 20%, rgba(14, 116, 144, 0.25), transparent 55%),
           radial-gradient(circle at 80% 0%, rgba(17, 94, 89, 0.3), transparent 40%),
@@ -546,96 +552,6 @@ INDEX_HTML = """
         display: none !important;
       }
 
-      .auth-overlay {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: clamp(1rem, 4vw, 2rem);
-        background: rgba(2, 6, 23, 0.65);
-        backdrop-filter: blur(18px);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.25s ease;
-      }
-
-      .auth-overlay--active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .auth-card {
-        width: min(420px, 100%);
-        background: rgba(4, 17, 34, 0.92);
-        border: 1px solid var(--panel-border);
-        border-radius: 20px;
-        padding: clamp(1.25rem, 4vw, 1.75rem);
-        box-shadow: 0 30px 60px var(--shadow);
-        display: flex;
-        flex-direction: column;
-        gap: 1.1rem;
-      }
-
-      .auth-card h3 {
-        margin: 0;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.95rem;
-      }
-
-      .auth-tabs {
-        display: inline-flex;
-        align-self: center;
-        background: rgba(15, 23, 42, 0.55);
-        border-radius: 999px;
-        padding: 0.25rem;
-        gap: 0.35rem;
-      }
-
-      .auth-tab {
-        flex: 1 1 0;
-        border: none;
-        background: transparent;
-        color: var(--text-muted);
-        font-weight: 600;
-        letter-spacing: 0.03em;
-        border-radius: 999px;
-        padding: 0.55rem 1.1rem;
-        cursor: pointer;
-        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-      }
-
-      .auth-tab--active {
-        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-        color: #001219;
-        box-shadow: 0 10px 28px rgba(14, 165, 233, 0.35);
-      }
-
-      .auth-form {
-        display: none;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-
-      .auth-form--active {
-        display: flex;
-      }
-
-      .auth-close {
-        align-self: center;
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        font-size: 0.85rem;
-        cursor: pointer;
-        letter-spacing: 0.03em;
-      }
-
-      .auth-close:hover {
-        color: var(--text-primary);
-      }
-
       footer {
         margin-top: auto;
         text-align: center;
@@ -706,7 +622,7 @@ INDEX_HTML = """
           min-height: 360px;
           padding: 1rem;
           border-radius: 18px;
-          aspect-ratio: 2 / 3;
+          aspect-ratio: 9 / 16;
         }
 
         .table-overlay {
@@ -744,10 +660,6 @@ INDEX_HTML = """
 
         .chip-row {
           justify-content: center;
-        }
-
-        .auth-card {
-          padding: 1.1rem;
         }
 
         footer {
@@ -797,14 +709,14 @@ INDEX_HTML = """
       <header class=\"app-header\">
         <div>
           <h1>OpenBlackJack</h1>
-          <p class=\"tagline\">Arcade-style single player blackjack.</p>
+          <p class=\"tagline\">Blackjack solo optimisé pour le mode portrait.</p>
         </div>
         <div id=\"status\" class=\"status-badge\" data-tone=\"info\" role=\"status\">
           Chargement de la table…
         </div>
       </header>
 
-      <div class=\"balance\" id=\"balance\">Mode invité — mises désactivées.</div>
+      <div class=\"balance\" id=\"balance\">Chargement des crédits locaux…</div>
 
       <main class=\"layout\">
         <section class=\"panel panel--table\">
@@ -838,39 +750,6 @@ INDEX_HTML = """
                 <div class=\"session-id\" id=\"session-info\">Session <span>—</span></div>
               </div>
             </div>
-            <div class=\"auth-overlay\" id=\"auth-overlay\" aria-hidden=\"true\">
-              <div class=\"auth-card\">
-                <div class=\"auth-tabs\" role=\"tablist\">
-                  <button type=\"button\" class=\"auth-tab auth-tab--active\" data-auth-tab=\"login\" role=\"tab\" aria-selected=\"true\">
-                    Connexion
-                  </button>
-                  <button type=\"button\" class=\"auth-tab\" data-auth-tab=\"signup\" role=\"tab\" aria-selected=\"false\">
-                    Inscription
-                  </button>
-                </div>
-                <form id=\"login-form\" class=\"auth-form auth-form--active\" autocomplete=\"on\">
-                  <h3>Connexion</h3>
-                  <label>Nom d'utilisateur
-                    <input id=\"login-username\" autocomplete=\"username\" required />
-                  </label>
-                  <label>Mot de passe
-                    <input id=\"login-password\" type=\"password\" autocomplete=\"current-password\" required />
-                  </label>
-                  <button class=\"primary\" type=\"submit\">Se connecter</button>
-                </form>
-                <form id=\"signup-form\" class=\"auth-form\" autocomplete=\"on\">
-                  <h3>Inscription</h3>
-                  <label>Nom d'utilisateur
-                    <input id=\"signup-username\" autocomplete=\"username\" required />
-                  </label>
-                  <label>Mot de passe
-                    <input id=\"signup-password\" type=\"password\" autocomplete=\"new-password\" required />
-                  </label>
-                  <button class=\"primary\" type=\"submit\">Créer un compte</button>
-                </form>
-                <button type=\"button\" class=\"auth-close\" id=\"auth-close\">Continuer en invité</button>
-              </div>
-            </div>
           </div>
 
           <div class=\"table-footer\">
@@ -902,12 +781,11 @@ INDEX_HTML = """
             </form>
 
             <div class=\"session-actions\">
-              <button class=\"secondary\" type=\"button\" id=\"auth-open\">Connexion / Inscription</button>
-              <button class=\"secondary\" type=\"button\" id=\"guest-button\">Jouer en invité</button>
-              <button class=\"secondary hidden\" type=\"button\" id=\"logout-button\" disabled>Se déconnecter</button>
+              <button class=\"secondary\" type=\"button\" id=\"reset-credits\">Réinitialiser les crédits</button>
+              <button class=\"secondary\" type=\"button\" id=\"boost-credits\">Ajouter 100 crédits</button>
             </div>
             <p class=\"muted\">
-              Sélectionnez un jeton puis cliquez sur une zone de mise pour placer vos crédits. Clic droit retire le jeton actif. Les comptes sauvegardent vos crédits et permettent les mises. En invité, les mises sont bloquées.
+              Sélectionnez un jeton puis appuyez sur une zone de mise pour placer vos crédits. Un appui long ou un clic droit retire le jeton actif. Vos crédits sont enregistrés sur cet appareil et restent disponibles même sans connexion.
             </p>
           </div>
         </section>
@@ -1222,26 +1100,20 @@ INDEX_HTML = """
       const clearBetsButton = document.getElementById('clear-bets');
       const fullscreenButton = document.getElementById('fullscreen-button');
       const betSpotButtons = Array.from(document.querySelectorAll('.bet-spot'));
-      const logoutButton = document.getElementById('logout-button');
-      const guestButton = document.getElementById('guest-button');
-      const authOpenButton = document.getElementById('auth-open');
-      const authOverlay = document.getElementById('auth-overlay');
-      const authCloseButton = document.getElementById('auth-close');
-      const authTabButtons = Array.from(document.querySelectorAll('[data-auth-tab]'));
-      const authForms = {
-        login: document.getElementById('login-form'),
-        signup: document.getElementById('signup-form'),
-      };
+      const resetCreditsButton = document.getElementById('reset-credits');
+      const boostCreditsButton = document.getElementById('boost-credits');
       const chipButtons = Array.from(document.querySelectorAll('.chip-button'));
       const animator = window.Phaser ? new BlackjackAnimator('phaser-stage') : null;
       if (!animator) {
         document.getElementById('phaser-stage').innerHTML = '<p class=\"muted\">Chargement Phaser impossible. Les cartes seront statiques.</p>';
       }
 
-      let token = window.localStorage.getItem('openblackjack_token');
-      let profile = null;
+      const CREDIT_STORAGE_KEY = 'openblackjack_credits_v1';
+      const DEFAULT_CREDITS = 1000;
+      let credits = loadCredits();
       let sessionId = null;
       let lastState = null;
+      let lastResolvedSession = null;
       let bettingLocked = false;
       let selectedChip = null;
       const betSpotsState = {
@@ -1250,19 +1122,20 @@ INDEX_HTML = """
         suited_pair: 0,
       };
 
-      function persistToken(value) {
-        if (!value) {
-          window.localStorage.removeItem('openblackjack_token');
-        } else {
-          window.localStorage.setItem('openblackjack_token', value);
+      function loadCredits() {
+        const stored = window.localStorage.getItem(CREDIT_STORAGE_KEY);
+        const value = stored ? Number.parseInt(stored, 10) : Number.NaN;
+        if (!Number.isNaN(value) && Number.isFinite(value) && value >= 0) {
+          return value;
         }
+        window.localStorage.setItem(CREDIT_STORAGE_KEY, String(DEFAULT_CREDITS));
+        return DEFAULT_CREDITS;
       }
 
-      function authHeaders() {
-        if (!token) {
-          return {};
-        }
-        return { Authorization: `Bearer ${token}` };
+      function persistCredits(value) {
+        credits = Math.max(0, Math.round(value));
+        window.localStorage.setItem(CREDIT_STORAGE_KEY, String(credits));
+        updateCreditsDisplay();
       }
 
       function updateBetSpotDisplays() {
@@ -1287,6 +1160,10 @@ INDEX_HTML = """
         clearChipSelection();
       }
 
+      function currentStakeTotal() {
+        return Object.values(betSpotsState).reduce((sum, value) => sum + (value || 0), 0);
+      }
+
       function setBettingLocked(lock) {
         bettingLocked = lock;
         updateBetSpotDisplays();
@@ -1294,6 +1171,13 @@ INDEX_HTML = """
 
       function formatCurrency(value) {
         return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'USD' }).format(value);
+      }
+
+      function updateCreditsDisplay() {
+        if (!balanceEl) {
+          return;
+        }
+        balanceEl.textContent = `Crédits disponibles : ${formatCurrency(credits)} — sauvegardés sur cet appareil.`;
       }
 
       function setStatus(message, tone = 'info') {
@@ -1306,45 +1190,6 @@ INDEX_HTML = """
           ],
           { duration: 220, easing: 'ease-out' }
         );
-      }
-
-      let activeAuthTab = 'login';
-
-      function setActiveAuthTab(tab) {
-        if (!authForms[tab]) {
-          return;
-        }
-        activeAuthTab = tab;
-        authTabButtons.forEach((button) => {
-          const isActive = button.dataset.authTab === tab;
-          button.classList.toggle('auth-tab--active', isActive);
-          button.setAttribute('aria-selected', String(isActive));
-        });
-        Object.entries(authForms).forEach(([name, form]) => {
-          const isActive = name === tab;
-          form.classList.toggle('auth-form--active', isActive);
-          if (isActive) {
-            const focusTarget = form.querySelector('input');
-            window.requestAnimationFrame(() => focusTarget && focusTarget.focus({ preventScroll: true }));
-          }
-        });
-      }
-
-      function hideAuthOverlay() {
-        if (!authOverlay) {
-          return;
-        }
-        authOverlay.classList.remove('auth-overlay--active');
-        authOverlay.setAttribute('aria-hidden', 'true');
-      }
-
-      function showAuthOverlay(tab = activeAuthTab || 'login') {
-        if (!authOverlay || profile) {
-          return;
-        }
-        setActiveAuthTab(tab);
-        authOverlay.classList.add('auth-overlay--active');
-        authOverlay.setAttribute('aria-hidden', 'false');
       }
 
       function updateOutcomeTone(outcome) {
@@ -1370,44 +1215,6 @@ INDEX_HTML = """
       function clearChipSelection() {
         chipButtons.forEach((button) => button.classList.remove('chip-button--active'));
         selectedChip = null;
-      }
-
-      function updateAuthUI() {
-        if (profile) {
-          balanceEl.textContent = `Connecté en tant que ${profile.username} — Solde : ${formatCurrency(profile.balance)}`;
-          logoutButton.disabled = false;
-          logoutButton.classList.remove('hidden');
-          betInput.disabled = false;
-          setBettingLocked(false);
-          if (authOpenButton) {
-            authOpenButton.classList.add('hidden');
-            authOpenButton.disabled = true;
-          }
-          if (guestButton) {
-            guestButton.disabled = true;
-            guestButton.classList.add('hidden');
-          }
-          hideAuthOverlay();
-        } else {
-          balanceEl.textContent = 'Mode invité — mises désactivées.';
-          logoutButton.disabled = true;
-          logoutButton.classList.add('hidden');
-          betInput.value = '0';
-          betInput.disabled = true;
-          resetBetSpots();
-          setBettingLocked(true);
-          if (authOpenButton) {
-            authOpenButton.classList.remove('hidden');
-            authOpenButton.disabled = false;
-          }
-          if (guestButton) {
-            guestButton.disabled = false;
-            guestButton.classList.remove('hidden');
-          }
-          if (authOverlay && !authOverlay.classList.contains('auth-overlay--active')) {
-            authOverlay.setAttribute('aria-hidden', 'true');
-          }
-        }
       }
 
       function updateDealerInfo(hand, options = {}) {
@@ -1530,10 +1337,44 @@ INDEX_HTML = """
         return mapping[outcome] || outcome.replace('_', ' ');
       }
 
+      function calculatePayout(state) {
+        if (!state || !state.is_over) {
+          return 0;
+        }
+        let total = 0;
+        (state.player_hands || []).forEach((hand) => {
+          if (!hand) {
+            return;
+          }
+          const bet = Number(hand.bet) || 0;
+          const result = hand.result;
+          if (!bet || !result) {
+            return;
+          }
+          if (result === 'player_blackjack') {
+            total += Math.round(bet * 2.5);
+          } else if (result === 'player_win' || result === 'dealer_bust') {
+            total += bet * 2;
+          } else if (result === 'push') {
+            total += bet;
+          }
+        });
+        Object.values(state.side_bets || {}).forEach((info) => {
+          if (!info) {
+            return;
+          }
+          const payout = Number(info.payout) || 0;
+          if (payout > 0) {
+            total += payout;
+          }
+        });
+        return total;
+      }
+
       async function postJson(path, body, headers = {}) {
         const response = await fetch(path, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...authHeaders(), ...headers },
+          headers: { 'Content-Type': 'application/json', ...headers },
           body: JSON.stringify(body),
         });
         if (!response.ok) {
@@ -1547,29 +1388,6 @@ INDEX_HTML = """
           throw new Error(message);
         }
         return response.json();
-      }
-
-      async function fetchProfile() {
-        if (!token) {
-          profile = null;
-          updateAuthUI();
-          return;
-        }
-        try {
-          const response = await fetch('/me', { headers: { ...authHeaders() } });
-          if (!response.ok) {
-            throw new Error('Impossible de récupérer le profil.');
-          }
-          profile = await response.json();
-          updateAuthUI();
-          setStatus('Connexion réussie.', 'success');
-        } catch (error) {
-          token = null;
-          profile = null;
-          persistToken(null);
-          updateAuthUI();
-          setStatus(error.message, 'error');
-        }
       }
 
       function handleGameState(data) {
@@ -1589,10 +1407,6 @@ INDEX_HTML = """
         }
         outcomeEl.textContent = formatOutcome(data.outcome, data.is_over);
         updateOutcomeTone(data.outcome);
-        if (typeof data.balance === 'number' && profile) {
-          profile.balance = data.balance;
-          updateAuthUI();
-        }
         const activeHand =
           typeof data.active_hand_index === 'number' && data.player_hands
             ? data.player_hands[data.active_hand_index]
@@ -1600,71 +1414,26 @@ INDEX_HTML = """
         const canAct = Boolean(activeHand) && !activeHand.result && !data.is_over;
         hitButton.disabled = !canAct;
         standButton.disabled = !canAct;
-        doubleButton.disabled = !canAct || !activeHand?.can_double || !profile;
-        splitButton.disabled = !canAct || !activeHand?.can_split || !profile;
-        setBettingLocked(profile ? !data.is_over : true);
+        doubleButton.disabled =
+          !canAct || !activeHand?.can_double || credits < (activeHand ? activeHand.bet : 0);
+        splitButton.disabled =
+          !canAct || !activeHand?.can_split || credits < (activeHand ? activeHand.bet : 0);
+        setBettingLocked(!data.is_over);
+        if (data.is_over) {
+          if (data.session_id && lastResolvedSession !== data.session_id) {
+            const payout = calculatePayout(data);
+            if (payout) {
+              persistCredits(credits + payout);
+            } else {
+              updateCreditsDisplay();
+            }
+            lastResolvedSession = data.session_id;
+          }
+        } else if (data.session_id !== lastResolvedSession) {
+          lastResolvedSession = null;
+        }
         return data;
       }
-
-      document.getElementById('signup-form').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const username = document.getElementById('signup-username').value.trim();
-        const password = document.getElementById('signup-password').value.trim();
-        if (!username || !password) {
-          setStatus('Veuillez indiquer un nom et un mot de passe.', 'error');
-          return;
-        }
-        try {
-          const data = await postJson('/signup', { username, password });
-          token = data.token;
-          persistToken(token);
-          await fetchProfile();
-          hideAuthOverlay();
-          setStatus('Compte créé ! Une nouvelle main vous attend.', 'success');
-        } catch (error) {
-          setStatus(error.message, 'error');
-        }
-      });
-
-      document.getElementById('login-form').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const username = document.getElementById('login-username').value.trim();
-        const password = document.getElementById('login-password').value.trim();
-        if (!username || !password) {
-          setStatus('Entrez vos identifiants pour vous connecter.', 'error');
-          return;
-        }
-        try {
-          const data = await postJson('/login', { username, password });
-          token = data.token;
-          persistToken(token);
-          await fetchProfile();
-          hideAuthOverlay();
-          setStatus('Connexion réussie. Bonne chance !', 'success');
-        } catch (error) {
-          setStatus(error.message, 'error');
-        }
-      });
-
-      if (guestButton) {
-        guestButton.addEventListener('click', () => {
-          token = null;
-          profile = null;
-          persistToken(null);
-          hideAuthOverlay();
-          updateAuthUI();
-          setStatus('Mode invité activé. Les mises sont à zéro.', 'info');
-        });
-      }
-
-      logoutButton.addEventListener('click', () => {
-        token = null;
-        profile = null;
-        persistToken(null);
-        updateAuthUI();
-        showAuthOverlay('login');
-        setStatus('Vous êtes déconnecté.', 'info');
-      });
 
       document.getElementById('start-form').addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -1681,16 +1450,22 @@ INDEX_HTML = """
           }
         });
         const total = mainBet + Object.values(sideBetsPayload).reduce((sum, value) => sum + value, 0);
-        if (!profile && total > 0) {
-          setStatus('Les invités doivent laisser la mise à 0.', 'error');
+        if (total > credits) {
+          setStatus("Crédits insuffisants pour cette mise.", 'error');
           return;
         }
+        const previousCredits = credits;
         try {
+          if (total > 0) {
+            persistCredits(credits - total);
+          }
+          lastResolvedSession = null;
           const data = await postJson('/game/start', { bet: mainBet, side_bets: sideBetsPayload });
           handleGameState(data);
           clearChipSelection();
           setStatus('Cartes distribuées — bonne chance !', 'success');
         } catch (error) {
+          persistCredits(previousCredits);
           setStatus(error.message, 'error');
         }
       });
@@ -1734,7 +1509,19 @@ INDEX_HTML = """
           setStatus('Aucune main active à doubler.', 'error');
           return;
         }
+        const hand = lastState.player_hands?.[lastState.active_hand_index];
+        const cost = hand ? Number(hand.bet) || 0 : 0;
+        if (cost <= 0) {
+          setStatus('Impossible de doubler cette main.', 'error');
+          return;
+        }
+        if (credits < cost) {
+          setStatus('Crédits insuffisants pour doubler.', 'error');
+          return;
+        }
+        const previousCredits = credits;
         try {
+          persistCredits(credits - cost);
           const data = await postJson('/game/double', {
             session_id: sessionId,
             hand_index: lastState.active_hand_index,
@@ -1742,6 +1529,7 @@ INDEX_HTML = """
           handleGameState(data);
           setStatus('Double appliqué.', 'info');
         } catch (error) {
+          persistCredits(previousCredits);
           setStatus(error.message, 'error');
         }
       });
@@ -1751,7 +1539,19 @@ INDEX_HTML = """
           setStatus('Aucune main active à séparer.', 'error');
           return;
         }
+        const hand = lastState.player_hands?.[lastState.active_hand_index];
+        const cost = hand ? Number(hand.bet) || 0 : 0;
+        if (cost <= 0) {
+          setStatus('Impossible de séparer cette main.', 'error');
+          return;
+        }
+        if (credits < cost) {
+          setStatus('Crédits insuffisants pour séparer.', 'error');
+          return;
+        }
+        const previousCredits = credits;
         try {
+          persistCredits(credits - cost);
           const data = await postJson('/game/split', {
             session_id: sessionId,
             hand_index: lastState.active_hand_index,
@@ -1759,6 +1559,7 @@ INDEX_HTML = """
           handleGameState(data);
           setStatus('Main séparée.', 'info');
         } catch (error) {
+          persistCredits(previousCredits);
           setStatus(error.message, 'error');
         }
       });
@@ -1766,10 +1567,6 @@ INDEX_HTML = """
       chipButtons.forEach((button) => {
         button.addEventListener('click', () => {
           const amount = parseInt(button.dataset.chip, 10) || 0;
-          if (!profile) {
-            setStatus('Connectez-vous pour miser avec des jetons.', 'warning');
-            return;
-          }
           clearChipSelection();
           selectedChip = amount;
           button.classList.add('chip-button--active');
@@ -1782,15 +1579,16 @@ INDEX_HTML = """
             setStatus('Les mises sont verrouillées pendant la main en cours.', 'warning');
             return;
           }
-          if (!profile) {
-            setStatus('Connectez-vous pour placer des mises.', 'warning');
-            return;
-          }
           if (!selectedChip) {
             setStatus('Choisissez un jeton avant de miser.', 'warning');
             return;
           }
           const spot = button.dataset.spot;
+          const prospectiveTotal = currentStakeTotal() + selectedChip;
+          if (prospectiveTotal > credits) {
+            setStatus('Crédits insuffisants pour cette mise.', 'warning');
+            return;
+          }
           betSpotsState[spot] = (betSpotsState[spot] || 0) + selectedChip;
           updateBetSpotDisplays();
         });
@@ -1838,45 +1636,20 @@ INDEX_HTML = """
         updateFullscreenLabel();
       }
 
-      authTabButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-          const tab = button.dataset.authTab;
-          if (tab) {
-            setActiveAuthTab(tab);
-          }
-        });
-      });
-
-      if (authOpenButton) {
-        authOpenButton.addEventListener('click', () => {
-          showAuthOverlay('login');
-          setStatus('Connectez-vous ou créez un compte pour miser.', 'info');
+      if (resetCreditsButton) {
+        resetCreditsButton.addEventListener('click', () => {
+          persistCredits(DEFAULT_CREDITS);
+          resetBetSpots();
+          setStatus('Crédits réinitialisés.', 'info');
         });
       }
 
-      if (authCloseButton) {
-        authCloseButton.addEventListener('click', () => {
-          hideAuthOverlay();
-          setStatus('Vous pouvez jouer en invité ou miser en vous connectant.', 'info');
+      if (boostCreditsButton) {
+        boostCreditsButton.addEventListener('click', () => {
+          persistCredits(credits + 100);
+          setStatus('100 crédits ajoutés.', 'success');
         });
       }
-
-      if (authOverlay) {
-        authOverlay.addEventListener('click', (event) => {
-          if (event.target === authOverlay) {
-            hideAuthOverlay();
-          }
-        });
-      }
-
-      document.addEventListener('keydown', (event) => {
-        if (!authOverlay) {
-          return;
-        }
-        if (event.key === 'Escape' && authOverlay.classList.contains('auth-overlay--active')) {
-          hideAuthOverlay();
-        }
-      });
 
       document.addEventListener('gesturestart', (event) => {
         event.preventDefault();
@@ -1888,16 +1661,12 @@ INDEX_HTML = """
         }
       });
 
+      updateCreditsDisplay();
       updateBetSpotDisplays();
       renderPlayerHands([]);
       renderSideBets({});
-      updateAuthUI();
-      if (token) {
-        fetchProfile();
-      } else {
-        showAuthOverlay('login');
-        setStatus('Jouez en invité ou connectez-vous pour miser.');
-      }
+      setBettingLocked(false);
+      setStatus('Crédits prêts — placez vos mises !', 'success');
     </script>
   </body>
 </html>
