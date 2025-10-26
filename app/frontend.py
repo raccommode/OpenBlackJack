@@ -117,10 +117,9 @@ INDEX_HTML = """
       }
 
       main.layout {
-        display: grid;
-        grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+        display: flex;
+        flex-direction: column;
         gap: 1.5rem;
-        align-items: stretch;
       }
 
       .panel {
@@ -371,16 +370,108 @@ INDEX_HTML = """
         font-size: 0.85rem;
       }
 
-      .panel--auth .panel-section {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .auth-actions {
+      .session-actions {
         display: flex;
         flex-wrap: wrap;
         gap: 0.65rem;
+      }
+
+      .session-actions button {
+        flex: 1 1 180px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .auth-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(1rem, 4vw, 2rem);
+        background: rgba(2, 6, 23, 0.65);
+        backdrop-filter: blur(18px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+
+      .auth-overlay--active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .auth-card {
+        width: min(420px, 100%);
+        background: rgba(4, 17, 34, 0.92);
+        border: 1px solid var(--panel-border);
+        border-radius: 20px;
+        padding: clamp(1.25rem, 4vw, 1.75rem);
+        box-shadow: 0 30px 60px var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+      }
+
+      .auth-card h3 {
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.95rem;
+      }
+
+      .auth-tabs {
+        display: inline-flex;
+        align-self: center;
+        background: rgba(15, 23, 42, 0.55);
+        border-radius: 999px;
+        padding: 0.25rem;
+        gap: 0.35rem;
+      }
+
+      .auth-tab {
+        flex: 1 1 0;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        border-radius: 999px;
+        padding: 0.55rem 1.1rem;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .auth-tab--active {
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+        color: #001219;
+        box-shadow: 0 10px 28px rgba(14, 165, 233, 0.35);
+      }
+
+      .auth-form {
+        display: none;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .auth-form--active {
+        display: flex;
+      }
+
+      .auth-close {
+        align-self: center;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+      }
+
+      .auth-close:hover {
+        color: var(--text-primary);
       }
 
       footer {
@@ -395,16 +486,19 @@ INDEX_HTML = """
       }
 
       @media (max-width: 1024px) {
-        main.layout {
-          grid-template-columns: 1fr;
+        .table-surface {
+          min-height: 420px;
+        }
+      }
+
+      @media (orientation: portrait) and (max-width: 1024px) {
+        .table-surface {
+          min-height: clamp(480px, 75vh, 640px);
+          aspect-ratio: 3 / 4;
         }
 
-        .panel--auth {
-          order: 2;
-        }
-
-        .panel--table {
-          order: 1;
+        .table-overlay {
+          padding: clamp(1rem, 5vw, 1.75rem);
         }
       }
 
@@ -447,9 +541,10 @@ INDEX_HTML = """
         }
 
         .table-surface {
-          min-height: 260px;
+          min-height: 360px;
           padding: 1rem;
           border-radius: 18px;
+          aspect-ratio: 2 / 3;
         }
 
         .table-overlay {
@@ -470,22 +565,27 @@ INDEX_HTML = """
           width: 100%;
         }
 
-        .auth-actions {
-          flex-direction: column;
-        }
-
         .action-buttons {
           flex-direction: column;
           width: 100%;
         }
 
-        .auth-actions button,
+        .session-actions,
+        .action-buttons {
+          width: 100%;
+        }
+
+        .session-actions button,
         .action-buttons button {
           width: 100%;
         }
 
         .chip-row {
           justify-content: center;
+        }
+
+        .auth-card {
+          padding: 1.1rem;
         }
 
         footer {
@@ -502,7 +602,10 @@ INDEX_HTML = """
           padding: 0.75rem 1rem;
         }
 
-        .panel,
+        .panel {
+          padding: 0.9rem;
+        }
+
         .table-surface {
           padding: 0.9rem;
         }
@@ -558,6 +661,39 @@ INDEX_HTML = """
                 <span class=\"hand-status\"></span>
               </div>
             </div>
+            <div class=\"auth-overlay\" id=\"auth-overlay\" aria-hidden=\"true\">
+              <div class=\"auth-card\">
+                <div class=\"auth-tabs\" role=\"tablist\">
+                  <button type=\"button\" class=\"auth-tab auth-tab--active\" data-auth-tab=\"login\" role=\"tab\" aria-selected=\"true\">
+                    Connexion
+                  </button>
+                  <button type=\"button\" class=\"auth-tab\" data-auth-tab=\"signup\" role=\"tab\" aria-selected=\"false\">
+                    Inscription
+                  </button>
+                </div>
+                <form id=\"login-form\" class=\"auth-form auth-form--active\" autocomplete=\"on\">
+                  <h3>Connexion</h3>
+                  <label>Nom d'utilisateur
+                    <input id=\"login-username\" autocomplete=\"username\" required />
+                  </label>
+                  <label>Mot de passe
+                    <input id=\"login-password\" type=\"password\" autocomplete=\"current-password\" required />
+                  </label>
+                  <button class=\"primary\" type=\"submit\">Se connecter</button>
+                </form>
+                <form id=\"signup-form\" class=\"auth-form\" autocomplete=\"on\">
+                  <h3>Inscription</h3>
+                  <label>Nom d'utilisateur
+                    <input id=\"signup-username\" autocomplete=\"username\" required />
+                  </label>
+                  <label>Mot de passe
+                    <input id=\"signup-password\" type=\"password\" autocomplete=\"new-password\" required />
+                  </label>
+                  <button class=\"primary\" type=\"submit\">Créer un compte</button>
+                </form>
+                <button type=\"button\" class=\"auth-close\" id=\"auth-close\">Continuer en invité</button>
+              </div>
+            </div>
           </div>
 
           <div class=\"table-footer\">
@@ -581,41 +717,11 @@ INDEX_HTML = """
                 <button class=\"secondary\" type=\"button\" id=\"stand-button\" disabled>Rester</button>
               </div>
             </form>
-          </div>
-        </section>
 
-        <section class=\"panel panel--auth\">
-          <h2>Connexion</h2>
-          <div class=\"panel-section forms\">
-            <div class=\"form-card\">
-              <h3>Inscription</h3>
-              <form id=\"signup-form\">
-                <label>Nom d'utilisateur
-                  <input id=\"signup-username\" autocomplete=\"username\" required />
-                </label>
-                <label>Mot de passe
-                  <input id=\"signup-password\" type=\"password\" autocomplete=\"new-password\" required />
-                </label>
-                <button class=\"primary\" type=\"submit\">Créer un compte</button>
-              </form>
-            </div>
-            <div class=\"form-card\">
-              <h3>Connexion</h3>
-              <form id=\"login-form\">
-                <label>Nom d'utilisateur
-                  <input id=\"login-username\" autocomplete=\"username\" required />
-                </label>
-                <label>Mot de passe
-                  <input id=\"login-password\" type=\"password\" autocomplete=\"current-password\" required />
-                </label>
-                <button class=\"primary\" type=\"submit\">Se connecter</button>
-              </form>
-            </div>
-          </div>
-          <div class=\"panel-section\">
-            <div class=\"auth-actions\">
+            <div class=\"session-actions\">
+              <button class=\"secondary\" type=\"button\" id=\"auth-open\">Connexion / Inscription</button>
               <button class=\"secondary\" type=\"button\" id=\"guest-button\">Jouer en invité</button>
-              <button class=\"secondary\" type=\"button\" id=\"logout-button\" disabled>Se déconnecter</button>
+              <button class=\"secondary hidden\" type=\"button\" id=\"logout-button\" disabled>Se déconnecter</button>
             </div>
             <p class=\"muted\">
               Les comptes sauvegardent vos crédits et permettent les mises. En invité, les mises sont bloquées.
@@ -639,6 +745,11 @@ INDEX_HTML = """
           if (!window.Phaser) {
             return;
           }
+          const viewportWidth = window.innerWidth || window.screen.width || 720;
+          const viewportHeight = window.innerHeight || window.screen.height || 720;
+          const isPortrait = viewportHeight > viewportWidth;
+          const baseWidth = isPortrait ? 540 : 720;
+          const baseHeight = isPortrait ? 720 : 360;
           const animator = this;
           this.game = new Phaser.Game({
             type: Phaser.AUTO,
@@ -647,8 +758,8 @@ INDEX_HTML = """
             scale: {
               mode: Phaser.Scale.FIT,
               autoCenter: Phaser.Scale.CENTER_BOTH,
-              width: 720,
-              height: 360,
+              width: baseWidth,
+              height: baseHeight,
             },
             scene: {
               create() {
@@ -662,6 +773,7 @@ INDEX_HTML = """
               },
             },
           });
+
         }
 
         buildTable() {
@@ -895,6 +1007,15 @@ INDEX_HTML = """
       const hitButton = document.getElementById('hit-button');
       const standButton = document.getElementById('stand-button');
       const logoutButton = document.getElementById('logout-button');
+      const guestButton = document.getElementById('guest-button');
+      const authOpenButton = document.getElementById('auth-open');
+      const authOverlay = document.getElementById('auth-overlay');
+      const authCloseButton = document.getElementById('auth-close');
+      const authTabButtons = Array.from(document.querySelectorAll('[data-auth-tab]'));
+      const authForms = {
+        login: document.getElementById('login-form'),
+        signup: document.getElementById('signup-form'),
+      };
       const chipButtons = Array.from(document.querySelectorAll('.chip-button'));
       const animator = window.Phaser ? new BlackjackAnimator('phaser-stage') : null;
       if (!animator) {
@@ -936,6 +1057,45 @@ INDEX_HTML = """
         );
       }
 
+      let activeAuthTab = 'login';
+
+      function setActiveAuthTab(tab) {
+        if (!authForms[tab]) {
+          return;
+        }
+        activeAuthTab = tab;
+        authTabButtons.forEach((button) => {
+          const isActive = button.dataset.authTab === tab;
+          button.classList.toggle('auth-tab--active', isActive);
+          button.setAttribute('aria-selected', String(isActive));
+        });
+        Object.entries(authForms).forEach(([name, form]) => {
+          const isActive = name === tab;
+          form.classList.toggle('auth-form--active', isActive);
+          if (isActive) {
+            const focusTarget = form.querySelector('input');
+            window.requestAnimationFrame(() => focusTarget && focusTarget.focus({ preventScroll: true }));
+          }
+        });
+      }
+
+      function hideAuthOverlay() {
+        if (!authOverlay) {
+          return;
+        }
+        authOverlay.classList.remove('auth-overlay--active');
+        authOverlay.setAttribute('aria-hidden', 'true');
+      }
+
+      function showAuthOverlay(tab = activeAuthTab || 'login') {
+        if (!authOverlay || profile) {
+          return;
+        }
+        setActiveAuthTab(tab);
+        authOverlay.classList.add('auth-overlay--active');
+        authOverlay.setAttribute('aria-hidden', 'false');
+      }
+
       function updateOutcomeTone(outcome) {
         outcomeEl.classList.remove('outcome--win', 'outcome--loss', 'outcome--push');
         if (!outcome) {
@@ -963,13 +1123,35 @@ INDEX_HTML = """
         if (profile) {
           balanceEl.textContent = `Connecté en tant que ${profile.username} — Solde : ${formatCurrency(profile.balance)}`;
           logoutButton.disabled = false;
+          logoutButton.classList.remove('hidden');
           betInput.disabled = false;
+          if (authOpenButton) {
+            authOpenButton.classList.add('hidden');
+            authOpenButton.disabled = true;
+          }
+          if (guestButton) {
+            guestButton.disabled = true;
+            guestButton.classList.add('hidden');
+          }
+          hideAuthOverlay();
         } else {
           balanceEl.textContent = 'Mode invité — mises désactivées.';
           logoutButton.disabled = true;
+          logoutButton.classList.add('hidden');
           betInput.value = '0';
           betInput.disabled = true;
           clearChipSelection();
+          if (authOpenButton) {
+            authOpenButton.classList.remove('hidden');
+            authOpenButton.disabled = false;
+          }
+          if (guestButton) {
+            guestButton.disabled = false;
+            guestButton.classList.remove('hidden');
+          }
+          if (authOverlay && !authOverlay.classList.contains('auth-overlay--active')) {
+            authOverlay.setAttribute('aria-hidden', 'true');
+          }
         }
       }
 
@@ -1090,6 +1272,7 @@ INDEX_HTML = """
           token = data.token;
           persistToken(token);
           await fetchProfile();
+          hideAuthOverlay();
           setStatus('Compte créé ! Une nouvelle main vous attend.', 'success');
         } catch (error) {
           setStatus(error.message, 'error');
@@ -1109,25 +1292,30 @@ INDEX_HTML = """
           token = data.token;
           persistToken(token);
           await fetchProfile();
+          hideAuthOverlay();
           setStatus('Connexion réussie. Bonne chance !', 'success');
         } catch (error) {
           setStatus(error.message, 'error');
         }
       });
 
-      document.getElementById('guest-button').addEventListener('click', () => {
-        token = null;
-        profile = null;
-        persistToken(null);
-        updateAuthUI();
-        setStatus('Mode invité activé. Les mises sont à zéro.', 'info');
-      });
+      if (guestButton) {
+        guestButton.addEventListener('click', () => {
+          token = null;
+          profile = null;
+          persistToken(null);
+          hideAuthOverlay();
+          updateAuthUI();
+          setStatus('Mode invité activé. Les mises sont à zéro.', 'info');
+        });
+      }
 
       logoutButton.addEventListener('click', () => {
         token = null;
         profile = null;
         persistToken(null);
         updateAuthUI();
+        showAuthOverlay('login');
         setStatus('Vous êtes déconnecté.', 'info');
       });
 
@@ -1189,6 +1377,46 @@ INDEX_HTML = """
         });
       });
 
+      authTabButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const tab = button.dataset.authTab;
+          if (tab) {
+            setActiveAuthTab(tab);
+          }
+        });
+      });
+
+      if (authOpenButton) {
+        authOpenButton.addEventListener('click', () => {
+          showAuthOverlay('login');
+          setStatus('Connectez-vous ou créez un compte pour miser.', 'info');
+        });
+      }
+
+      if (authCloseButton) {
+        authCloseButton.addEventListener('click', () => {
+          hideAuthOverlay();
+          setStatus('Vous pouvez jouer en invité ou miser en vous connectant.', 'info');
+        });
+      }
+
+      if (authOverlay) {
+        authOverlay.addEventListener('click', (event) => {
+          if (event.target === authOverlay) {
+            hideAuthOverlay();
+          }
+        });
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (!authOverlay) {
+          return;
+        }
+        if (event.key === 'Escape' && authOverlay.classList.contains('auth-overlay--active')) {
+          hideAuthOverlay();
+        }
+      });
+
       document.addEventListener('gesturestart', (event) => {
         event.preventDefault();
       });
@@ -1203,6 +1431,7 @@ INDEX_HTML = """
       if (token) {
         fetchProfile();
       } else {
+        showAuthOverlay('login');
         setStatus('Jouez en invité ou connectez-vous pour miser.');
       }
     </script>
