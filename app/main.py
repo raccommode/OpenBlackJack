@@ -11,6 +11,7 @@ from .auth import authenticate, generate_token, hash_password, verify_password
 from .blackjack import GameSession, session_manager
 from .schemas import (
     GameActionRequest,
+    GameHandActionRequest,
     GameStartRequest,
     GameStateResponse,
     LoginRequest,
@@ -54,15 +55,20 @@ def settle_session(session: GameSession) -> Optional[int]:
         session.is_settled = True
         return None
     balance = user["balance"]
-    bet = session.bet
     payout = 0
-    if session.outcome in {"player_win", "dealer_bust"}:
-        payout = bet * 2
-    elif session.outcome == "player_blackjack":
-        payout = int(bet * 2.5)
-    elif session.outcome == "push":
-        payout = bet
-    # Loss scenarios keep payout at 0
+    for hand_state in session.player_hands:
+        result = hand_state.outcome
+        bet_amount = hand_state.bet
+        if not result or bet_amount <= 0:
+            continue
+        if result == "player_blackjack":
+            payout += int(bet_amount * 2.5)
+        elif result in {"player_win", "dealer_bust"}:
+            payout += bet_amount * 2
+        elif result == "push":
+            payout += bet_amount
+    for side_result in session.side_bet_results.values():
+        payout += int(side_result.get("payout", 0))
     new_balance = balance + payout
     db.update_user_balance(session.owner_id, new_balance)
     session.is_settled = True
@@ -73,12 +79,14 @@ def serialize_session(session: GameSession, balance: Optional[int]) -> GameState
     data = session.serialize()
     return GameStateResponse(
         session_id=data["session_id"],
-        player_hand=data["player_hand"],
+        player_hands=data["player_hands"],
         dealer_hand=data["dealer_hand"],
         is_over=data["is_over"],
         outcome=data["outcome"],
         bet=data["bet"],
         balance=balance,
+        active_hand_index=data["active_hand_index"],
+        side_bets=data["side_bets"],
     )
 
 
@@ -134,24 +142,34 @@ def start_game(
     user: Optional[sqlite3.Row] = Depends(optional_user),
 ) -> GameStateResponse:
     bet = payload.bet or 0
+    side_bets = {key: max(0, int(value)) for key, value in payload.side_bets.items()}
     balance: Optional[int] = None
     owner_id: Optional[int] = None
 
     if user:
         owner_id = user["id"]
         current_balance = user["balance"]
-        if bet > current_balance:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bet exceeds available balance.")
-        if bet > 0:
-            db.update_user_balance(owner_id, current_balance - bet)
-            balance = current_balance - bet
+        total_wager = bet + sum(side_bets.values())
+        if total_wager > current_balance:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Bet exceeds available balance.",
+            )
+        if total_wager > 0:
+            db.update_user_balance(owner_id, current_balance - total_wager)
+            balance = current_balance - total_wager
         else:
             balance = current_balance
     else:
-        if bet:
+        if bet or any(side_bets.values()):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Guests cannot place bets.")
+        side_bets = {}
 
-    session = session_manager.create_session(bet=bet if owner_id else 0, owner_id=owner_id)
+    session = session_manager.create_session(
+        bet=bet if owner_id else 0,
+        owner_id=owner_id,
+        side_bets=side_bets if owner_id else {},
+    )
 
     if session.is_over:
         balance = settle_session(session) or balance
@@ -172,7 +190,7 @@ def hit(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
     ensure_owner(session, user)
 
-    session.player_hit()
+    session.player_hit(payload.hand_index)
 
     balance = None
     if session.is_over:
@@ -194,11 +212,81 @@ def stand(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
     ensure_owner(session, user)
 
-    session.player_stand()
+    session.player_stand(payload.hand_index)
 
     balance = None
     if session.is_over:
         balance = settle_session(session)
+        if session.owner_id and balance is None:
+            refreshed = db.get_user_by_id(session.owner_id)
+            balance = refreshed["balance"] if refreshed else None
+
+    return serialize_session(session, balance)
+
+
+@app.post("/game/double", response_model=GameStateResponse)
+def double(
+    payload: GameHandActionRequest,
+    user: Optional[sqlite3.Row] = Depends(optional_user),
+) -> GameStateResponse:
+    session = session_manager.get_session(payload.session_id)
+    if not session:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
+    ensure_owner(session, user)
+
+    cost = session.double_cost(payload.hand_index)
+    if cost <= 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Double impossible sur cette main.")
+
+    balance: Optional[int] = None
+    if session.owner_id:
+        record = db.get_user_by_id(session.owner_id)
+        if not record or record["balance"] < cost:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Solde insuffisant pour doubler.")
+        new_balance = record["balance"] - cost
+        db.update_user_balance(session.owner_id, new_balance)
+        balance = new_balance
+
+    if not session.player_double(payload.hand_index):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Double impossible sur cette main.")
+
+    if session.is_over:
+        balance = settle_session(session) or balance
+        if session.owner_id and balance is None:
+            refreshed = db.get_user_by_id(session.owner_id)
+            balance = refreshed["balance"] if refreshed else None
+
+    return serialize_session(session, balance)
+
+
+@app.post("/game/split", response_model=GameStateResponse)
+def split(
+    payload: GameHandActionRequest,
+    user: Optional[sqlite3.Row] = Depends(optional_user),
+) -> GameStateResponse:
+    session = session_manager.get_session(payload.session_id)
+    if not session:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
+    ensure_owner(session, user)
+
+    cost = session.split_cost(payload.hand_index)
+    if cost <= 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Split impossible sur cette main.")
+
+    balance: Optional[int] = None
+    if session.owner_id:
+        record = db.get_user_by_id(session.owner_id)
+        if not record or record["balance"] < cost:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Solde insuffisant pour séparer.")
+        new_balance = record["balance"] - cost
+        db.update_user_balance(session.owner_id, new_balance)
+        balance = new_balance
+
+    if not session.player_split(payload.hand_index):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Split impossible sur cette main.")
+
+    if session.is_over:
+        balance = settle_session(session) or balance
         if session.owner_id and balance is None:
             refreshed = db.get_user_by_id(session.owner_id)
             balance = refreshed["balance"] if refreshed else None
