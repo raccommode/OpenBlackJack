@@ -25,6 +25,9 @@ RANKS = [
 ]
 
 
+NUMBER_OF_DECKS = 8
+
+
 @dataclass(frozen=True)
 class Card:
     """Represents a card in a standard deck of 52 cards."""
@@ -45,10 +48,15 @@ class Card:
 
 
 class Deck:
-    """Represents a shuffled deck of 52 unique cards."""
+    """Represents a shuffled shoe of standard 52-card decks."""
 
-    def __init__(self) -> None:
-        self.cards: List[Card] = [Card(suit=suit, rank=rank) for suit in SUITS for rank in RANKS]
+    def __init__(self, number_of_decks: int = NUMBER_OF_DECKS) -> None:
+        self.cards: List[Card] = [
+            Card(suit=suit, rank=rank)
+            for _ in range(number_of_decks)
+            for suit in SUITS
+            for rank in RANKS
+        ]
         random.shuffle(self.cards)
 
     def draw(self) -> Card:

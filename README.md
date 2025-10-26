@@ -4,7 +4,8 @@ OpenBlackJack is a single-player Blackjack API built with FastAPI. It supports g
 
 ## Features
 
-- Standard 52-card Blackjack simulation with hit and stand actions
+- Casino-style 8-deck Blackjack shoe with hit and stand actions
+- Responsive web interface served from `/` for instant play on desktop and mobile
 - Optional authentication with username and password (no email required)
 - Automatic $1000 credit on signup and balance tracking for authenticated users
 - Guest games without signup or login
@@ -19,7 +20,7 @@ OpenBlackJack is a single-player Blackjack API built with FastAPI. It supports g
    docker-compose up --build
    ```
 
-2. The API will be available at `http://localhost:8000`. Interactive documentation is provided at `http://localhost:8000/docs`.
+2. The API and web client will be available at `http://localhost:3666`. Interactive documentation is provided at `http://localhost:3666/docs`.
 
 ## API overview
 

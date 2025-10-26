@@ -5,7 +5,7 @@ services:
     build: .
     container_name: openblackjack
     ports:
-      - "8000:8000"
+      - "3666:3666"
     volumes:
       - blackjack_data:/app/data
     environment:

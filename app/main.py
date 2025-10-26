@@ -17,8 +17,10 @@ from .schemas import (
     SignupRequest,
     TokenResponse,
 )
+from .frontend import router as frontend_router
 
 app = FastAPI(title="OpenBlackJack", description="Single-player Blackjack API")
+app.include_router(frontend_router)
 
 
 def optional_user(authorization: Optional[str] = Header(default=None)) -> Optional[sqlite3.Row]:
