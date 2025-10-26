@@ -1,0 +1,4 @@
+# Ignore runtime database files and backups
+*.db
+backups/
+!backups/.gitkeep
