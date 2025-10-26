@@ -15,15 +15,22 @@ INDEX_HTML = """
     <title>OpenBlackJack</title>
     <style>
       :root {
-        color-scheme: light dark;
-        --bg: #0b132b;
-        --panel: rgba(255, 255, 255, 0.08);
-        --text: #f0f4f8;
-        --accent: #1c92ff;
-        --accent-dark: #1474c8;
-        --danger: #ff5c5c;
-        --success: #60d394;
-        --shadow: rgba(0, 0, 0, 0.35);
+        color-scheme: dark;
+        --bg: #020617;
+        --bg-secondary: #052527;
+        --panel: rgba(6, 15, 32, 0.85);
+        --panel-border: rgba(148, 163, 184, 0.18);
+        --text-primary: #f8fafc;
+        --text-muted: rgba(226, 232, 240, 0.75);
+        --accent: #22d3ee;
+        --accent-strong: #0ea5e9;
+        --success: #34d399;
+        --danger: #f87171;
+        --warning: #fbbf24;
+        --win: #4ade80;
+        --loss: #f87171;
+        --push: #facc15;
+        --shadow: rgba(7, 11, 27, 0.6);
       }
 
       * {
@@ -32,6 +39,35 @@ INDEX_HTML = """
 
       body {
         margin: 0;
+        font-family: \"Inter\", \"Segoe UI\", system-ui, -apple-system, sans-serif;
+        background: radial-gradient(circle at 20% 20%, rgba(14, 116, 144, 0.25), transparent 55%),
+          radial-gradient(circle at 80% 0%, rgba(17, 94, 89, 0.3), transparent 40%),
+          linear-gradient(160deg, #001219 0%, #020617 45%, #010409 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+      }
+
+      .app-shell {
+        width: min(1150px, 100%);
+        margin: 0 auto;
+        padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+        min-height: 100vh;
+      }
+
+      .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 6vw, 3.1rem);
         font-family: \"Inter\", \"Segoe UI\", Roboto, sans-serif;
         background: linear-gradient(160deg, #000428, #004e92);
         color: var(--text);
@@ -55,37 +91,96 @@ INDEX_HTML = """
         text-transform: uppercase;
       }
 
-      p.tagline {
-        margin-top: 0;
-        color: rgba(240, 244, 248, 0.75);
-        font-size: 1rem;
+      .tagline {
+        margin: 0.4rem 0 0;
+        color: var(--text-muted);
+        font-size: clamp(0.95rem, 2.5vw, 1.05rem);
       }
 
-      main {
-        width: min(100%, 1100px);
+      .status-badge {
+        padding: 0.85rem 1.4rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(14, 116, 144, 0.12);
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        transition: background 0.2s ease, border 0.2s ease, color 0.2s ease;
+      }
+
+      .status--info {
+        color: var(--accent);
+        background: rgba(34, 211, 238, 0.12);
+        border-color: rgba(34, 211, 238, 0.35);
+      }
+
+      .status--success {
+        color: var(--success);
+        background: rgba(52, 211, 153, 0.12);
+        border-color: rgba(52, 211, 153, 0.35);
+      }
+
+      .status--error {
+        color: var(--danger);
+        background: rgba(248, 113, 113, 0.12);
+        border-color: rgba(248, 113, 113, 0.35);
+      }
+
+      .status--warning {
+        color: var(--warning);
+        background: rgba(251, 191, 36, 0.12);
+        border-color: rgba(251, 191, 36, 0.35);
+      }
+
+      main.layout {
         display: grid;
-        gap: 1.25rem;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+        gap: 1.5rem;
         align-items: stretch;
       }
 
-      .card {
-        background: rgba(10, 20, 40, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 1.25rem;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 18px 40px var(--shadow);
+      .panel {
+        background: var(--panel);
+        border-radius: 22px;
+        border: 1px solid var(--panel-border);
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 30px 70px var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 1.4rem;
+      }
+
+      .panel h2 {
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 1.1rem;
+      }
+
+      .panel--auth .panel-section {
         display: flex;
         flex-direction: column;
         gap: 1rem;
       }
 
-      .card h2 {
-        margin: 0;
-        font-size: 1.25rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
+      .panel--auth .forms {
+        gap: 1.25rem;
+      }
+
+      .balance {
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+
+      .session-id {
+        font-family: \"Fira Code\", \"Source Code Pro\", monospace;
+        font-size: 0.85rem;
+        letter-spacing: 0.03em;
+        color: var(--text-muted);
+      }
+
+      .session-id span {
+        color: var(--accent);
       }
 
       form {
@@ -94,205 +189,353 @@ INDEX_HTML = """
         gap: 0.75rem;
       }
 
+      .form-card {
+        padding: 1rem;
+        border-radius: 16px;
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+      }
+
+      .form-card h3 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
       label {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
         display: flex;
         flex-direction: column;
         gap: 0.35rem;
-        text-align: left;
       }
 
       input {
         padding: 0.65rem 0.8rem;
-        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 10px;
-        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: rgba(2, 6, 23, 0.35);
         color: inherit;
         font-size: 1rem;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
       }
 
       input:focus {
-        outline: 2px solid var(--accent);
-        outline-offset: 2px;
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25);
       }
 
       button {
         cursor: pointer;
         border: none;
-        border-radius: 999px;
-        padding: 0.7rem 1.2rem;
+        border-radius: 12px;
+        padding: 0.75rem 1.2rem;
         font-weight: 600;
         font-size: 1rem;
         letter-spacing: 0.03em;
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        gap: 0.4rem;
-        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-      }
-
-      button.primary {
-        background: linear-gradient(135deg, var(--accent), #6dd5fa);
-        color: #061220;
-        box-shadow: 0 8px 20px rgba(28, 146, 255, 0.35);
-      }
-
-      button.primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 16px 30px rgba(28, 146, 255, 0.4);
-      }
-
-      button.secondary {
-        background: rgba(255, 255, 255, 0.12);
-        color: var(--text);
-      }
-
-      button.secondary:hover {
-        background: rgba(255, 255, 255, 0.18);
+        gap: 0.45rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
       }
 
       button:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
         transform: none;
         box-shadow: none;
       }
 
-      .status {
-        min-height: 1.5rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-        letter-spacing: 0.03em;
+      button.primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+        color: #001219;
+        box-shadow: 0 12px 30px rgba(14, 165, 233, 0.35);
       }
 
-      .status.success {
-        color: var(--success);
+      button.primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 16px 36px rgba(34, 211, 238, 0.4);
       }
 
-      .status.error {
-        color: var(--danger);
+      button.secondary {
+        background: rgba(15, 23, 42, 0.45);
+        color: var(--text-primary);
+        border: 1px solid rgba(148, 163, 184, 0.18);
       }
 
-      .status.info {
-        color: rgba(240, 244, 248, 0.85);
+      button.secondary:hover:not(:disabled) {
+        background: rgba(15, 23, 42, 0.65);
       }
 
       .auth-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.6rem;
-        justify-content: flex-start;
+        gap: 0.65rem;
       }
 
-      .balance {
-        font-size: 1.1rem;
-        font-weight: 600;
-      }
-
-      .session-id {
-        font-family: \"Fira Code\", \"Source Code Pro\", monospace;
+      .muted {
+        color: var(--text-muted);
         font-size: 0.85rem;
-        word-break: break-all;
-        opacity: 0.7;
       }
 
-      .hand {
-        background: rgba(0, 0, 0, 0.25);
-        border-radius: 14px;
-        padding: 1rem;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      .panel--table {
+        gap: 1.5rem;
+      }
+
+      .table-surface {
+        background: radial-gradient(circle, rgba(6, 78, 59, 0.6) 0%, rgba(2, 44, 34, 0.55) 55%, rgba(1, 22, 39, 0.65) 100%);
+        border-radius: 22px;
+        padding: clamp(1.25rem, 4vw, 2rem);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .table-surface::before {
+        content: \"\";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.15), transparent 55%);
+        pointer-events: none;
+      }
+
+      .table-row {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .hand-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.75rem;
+        text-align: center;
       }
 
-      .hand h3 {
+      .hand-wrapper h3 {
         margin: 0;
-        letter-spacing: 0.05em;
         text-transform: uppercase;
-        font-size: 1rem;
+        letter-spacing: 0.1em;
+        font-size: 0.95rem;
       }
 
       .card-tiles {
         display: flex;
-        gap: 0.65rem;
+        gap: 0.75rem;
         flex-wrap: wrap;
+        justify-content: center;
+        min-height: 110px;
       }
 
       .card-tile {
-        background: rgba(255, 255, 255, 0.12);
-        border-radius: 12px;
-        padding: 0.75rem 0.9rem;
-        min-width: 4.8rem;
-        text-align: center;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        position: relative;
+        width: 72px;
+        height: 104px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 1px solid rgba(15, 23, 42, 0.15);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.4);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #0f172a;
+        overflow: hidden;
       }
 
-      .card-tile span {
-        display: block;
+      .card-tile.red {
+        color: #dc2626;
+      }
+
+      .card-tile.black {
+        color: #0f172a;
+      }
+
+      .card-tile .corner {
+        position: absolute;
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+
+      .card-tile .corner--top {
+        top: 8px;
+        left: 8px;
+      }
+
+      .card-tile .corner--bottom {
+        bottom: 8px;
+        right: 8px;
+        transform: rotate(180deg);
+      }
+
+      .card-tile .symbol {
+        font-size: 2.15rem;
+        line-height: 1;
       }
 
       .card-tile .rank {
-        font-size: 1.15rem;
-        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0.65;
       }
 
-      .card-tile .suit {
-        font-size: 0.85rem;
-        opacity: 0.8;
+      .card-back {
+        background: repeating-linear-gradient(45deg, rgba(2, 44, 34, 0.85), rgba(2, 44, 34, 0.85) 8px, rgba(15, 118, 110, 0.85) 8px, rgba(15, 118, 110, 0.85) 16px);
+        border: 1px solid rgba(34, 211, 238, 0.4);
+      }
+
+      .card-back::after {
+        content: \"\";
+        position: absolute;
+        inset: 12px;
+        border-radius: 10px;
+        border: 1px dashed rgba(226, 232, 240, 0.35);
       }
 
       .hand-total {
         font-size: 0.9rem;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        opacity: 0.85;
+        color: rgba(226, 232, 240, 0.9);
       }
 
-      .game-controls {
+      .hand-wrapper.hand--concealed .hand-total {
+        color: rgba(226, 232, 240, 0.65);
+      }
+
+      .hand-wrapper.hand--concealed .hand-total::after {
+        content: \" • dealer is hiding a card\";
+        text-transform: none;
+        font-size: 0.75rem;
+        letter-spacing: 0;
+      }
+
+      .table-footer {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-      }
-
-      .action-buttons {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
+        gap: 1.1rem;
       }
 
       .outcome {
         font-weight: 700;
-        font-size: 1.05rem;
+        font-size: 1.1rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-muted);
       }
 
-      .muted {
-        opacity: 0.65;
-        font-size: 0.9rem;
+      .outcome--win {
+        color: var(--win);
+      }
+
+      .outcome--loss {
+        color: var(--loss);
+      }
+
+      .outcome--push {
+        color: var(--push);
+      }
+
+      .bet-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: flex-end;
+      }
+
+      .bet-controls label {
+        flex: 1;
+        min-width: 180px;
+      }
+
+      .bet-controls input[type=\"number\"] {
+        max-width: 220px;
+      }
+
+      .chip-row {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .chip-button {
+        border-radius: 999px;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.95rem;
+        border: 1px solid rgba(34, 211, 238, 0.45);
+        background: rgba(14, 165, 233, 0.16);
+        color: var(--accent);
+      }
+
+      .chip-button:hover:not(:disabled) {
+        background: rgba(14, 165, 233, 0.26);
+      }
+
+      .chip-button--active {
+        background: linear-gradient(135deg, rgba(34, 211, 238, 0.85), rgba(14, 165, 233, 0.85));
+        color: #001219;
+      }
+
+      .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
       }
 
       footer {
         margin-top: auto;
-        padding: 1rem 0 0;
         text-align: center;
-        color: rgba(240, 244, 248, 0.55);
+        color: var(--text-muted);
         font-size: 0.85rem;
       }
 
-      @media (max-width: 900px) {
-        main {
+      footer code {
+        color: var(--accent);
+      }
+
+      @media (max-width: 1024px) {
+        main.layout {
           grid-template-columns: 1fr;
+        }
+
+        .panel--auth {
+          order: 2;
+        }
+
+        .panel--table {
+          order: 1;
         }
       }
 
-      @media (max-width: 540px) {
-        body {
-          padding: 1rem;
+      @media (max-width: 640px) {
+        .app-shell {
+          padding: 1.25rem 1rem 2rem;
         }
 
-        .card {
-          padding: 1rem;
+        .app-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .card-tile {
+          width: 62px;
+          height: 94px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .bet-controls label {
+          min-width: 100%;
+        }
+
+        .bet-controls {
+          flex-direction: column;
+          align-items: stretch;
         }
 
         .action-buttons {
@@ -306,75 +549,94 @@ INDEX_HTML = """
     </style>
   </head>
   <body>
-    <header>
-      <h1>OpenBlackJack</h1>
-      <p class=\"tagline\">Single-player Blackjack with optional accounts and instant play.</p>
-    </header>
-    <main>
-      <section class=\"card\>
-        <h2>Account</h2>
-        <div class=\"status info\" id=\"status\"></div>
-        <div class=\"balance\" id=\"balance-area\">Guest mode — betting disabled.</div>
-        <div class=\"session-id\" id=\"session-info\"></div>
-        <form id=\"signup-form\">
-          <h3>Sign up</h3>
-          <label>
-            Username
-            <input id=\"signup-username\" name=\"username\" minlength=\"3\" maxlength=\"30\" required />
-          </label>
-          <label>
-            Password
-            <input id=\"signup-password\" name=\"password\" type=\"password\" minlength=\"6\" required />
-          </label>
-          <button class=\"primary\" type=\"submit\">Create account</button>
-          <p class=\"muted\">New accounts start with a $1000 balance.</p>
-        </form>
-        <form id=\"login-form\">
-          <h3>Log in</h3>
-          <label>
-            Username
-            <input id=\"login-username\" name=\"username\" required />
-          </label>
-          <label>
-            Password
-            <input id=\"login-password\" name=\"password\" type=\"password\" required />
-          </label>
-          <button class=\"primary\" type=\"submit\">Log in</button>
-        </form>
-        <div class=\"auth-actions\">
-          <button class=\"secondary\" type=\"button\" id=\"guest-button\">Continue as guest</button>
-          <button class=\"secondary\" type=\"button\" id=\"logout-button\" disabled>Log out</button>
+    <div class=\"app-shell\">
+      <header class=\"app-header\">
+        <div>
+          <h1>OpenBlackJack</h1>
+          <p class=\"tagline\">Casino-style single-player blackjack with instant play.</p>
         </div>
-      </section>
-      <section class=\"card\">
-        <h2>Game table</h2>
-        <div class=\"game-controls\">
-          <form id=\"start-form\">
-            <label>
-              Bet amount (USD)
-              <input id=\"bet-input\" name=\"bet\" type=\"number\" min=\"0\" step=\"50\" value=\"0\" />
-            </label>
-            <button class=\"primary\" type=\"submit\">Deal a new hand</button>
-          </form>
-          <div class=\"action-buttons\">
-            <button class=\"secondary\" type=\"button\" id=\"hit-button\" disabled>Hit</button>
-            <button class=\"secondary\" type=\"button\" id=\"stand-button\" disabled>Stand</button>
+        <div class=\"status-badge status--info\" id=\"status\">Play as a guest or sign in to start betting.</div>
+      </header>
+      <main class=\"layout\">
+        <aside class=\"panel panel--auth\">
+          <div class=\"panel-section\">
+            <h2>Account</h2>
+            <p class=\"balance\" id=\"balance-area\">Guest mode — betting disabled.</p>
+            <p class=\"session-id\" id=\"session-info\"></p>
           </div>
-          <div class=\"outcome\" id=\"outcome\">Start a hand to begin playing.</div>
-          <div class=\"hand\" id=\"player-hand\">
-            <h3>Player</h3>
-            <div class=\"card-tiles\"></div>
-            <div class=\"hand-total\"></div>
+          <div class=\"panel-section forms\">
+            <form id=\"signup-form\" class=\"form-card\">
+              <h3>Create an account</h3>
+              <label>
+                Username
+                <input id=\"signup-username\" name=\"username\" minlength=\"3\" maxlength=\"30\" autocomplete=\"username\" required />
+              </label>
+              <label>
+                Password
+                <input id=\"signup-password\" name=\"password\" type=\"password\" minlength=\"6\" autocomplete=\"new-password\" required />
+              </label>
+              <button class=\"primary\" type=\"submit\">Create account</button>
+              <p class=\"muted\">New accounts instantly receive a $1000 bankroll.</p>
+            </form>
+            <form id=\"login-form\" class=\"form-card\">
+              <h3>Log in</h3>
+              <label>
+                Username
+                <input id=\"login-username\" name=\"username\" autocomplete=\"username\" required />
+              </label>
+              <label>
+                Password
+                <input id=\"login-password\" name=\"password\" type=\"password\" autocomplete=\"current-password\" required />
+              </label>
+              <button class=\"primary\" type=\"submit\">Log in</button>
+            </form>
+            <div class=\"auth-actions\">
+              <button class=\"secondary\" type=\"button\" id=\"guest-button\">Play as guest</button>
+              <button class=\"secondary\" type=\"button\" id=\"logout-button\" disabled>Log out</button>
+            </div>
           </div>
-          <div class=\"hand\" id=\"dealer-hand\">
-            <h3>Dealer</h3>
-            <div class=\"card-tiles\"></div>
-            <div class=\"hand-total\"></div>
+        </aside>
+        <section class=\"panel panel--table\">
+          <div class=\"table-surface\">
+            <div class=\"table-row\">
+              <div class=\"hand-wrapper\" id=\"dealer-hand\">
+                <h3>Dealer</h3>
+                <div class=\"card-tiles\"></div>
+                <div class=\"hand-total\"></div>
+              </div>
+            </div>
+            <div class=\"table-row\">
+              <div class=\"hand-wrapper\" id=\"player-hand\">
+                <h3>Player</h3>
+                <div class=\"card-tiles\"></div>
+                <div class=\"hand-total\"></div>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
-    </main>
-    <footer>API available at <code>/docs</code> for integrations.</footer>
+          <div class=\"table-footer\">
+            <div class=\"outcome\" id=\"outcome\">Start a hand to begin playing.</div>
+            <form id=\"start-form\" class=\"bet-controls\">
+              <label>
+                Bet amount (USD)
+                <input id=\"bet-input\" name=\"bet\" type=\"number\" min=\"0\" step=\"50\" value=\"0\" />
+              </label>
+              <div class=\"chip-row\">
+                <button class=\"chip-button\" type=\"button\" data-chip=\"50\">$50</button>
+                <button class=\"chip-button\" type=\"button\" data-chip=\"100\">$100</button>
+                <button class=\"chip-button\" type=\"button\" data-chip=\"250\">$250</button>
+                <button class=\"chip-button\" type=\"button\" data-chip=\"500\">$500</button>
+              </div>
+              <button class=\"primary\" type=\"submit\">Deal a new hand</button>
+            </form>
+            <div class=\"action-buttons\">
+              <button class=\"secondary\" type=\"button\" id=\"hit-button\" disabled>Hit</button>
+              <button class=\"secondary\" type=\"button\" id=\"stand-button\" disabled>Stand</button>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer>Need the API? Explore the interactive docs at <code>/docs</code>.</footer>
+    </div>
     <script>
       const statusEl = document.getElementById('status');
       const balanceEl = document.getElementById('balance-area');
@@ -386,6 +648,7 @@ INDEX_HTML = """
       const hitButton = document.getElementById('hit-button');
       const standButton = document.getElementById('stand-button');
       const logoutButton = document.getElementById('logout-button');
+      const chipButtons = Array.from(document.querySelectorAll('[data-chip]'));
 
       let token = null;
       let profile = null;
@@ -393,16 +656,38 @@ INDEX_HTML = """
 
       function setStatus(message, tone = 'info') {
         statusEl.textContent = message;
-        statusEl.className = `status ${tone}`;
+        statusEl.className = `status-badge status--${tone}`;
       }
 
       function authHeaders() {
         return token ? { Authorization: `Bearer ${token}` } : {};
       }
 
+      function formatCurrency(value) {
+        const amount = Number(value || 0);
+        return `$${amount.toLocaleString('en-US')}`;
+      }
+
+      function updateOutcomeTone(outcome) {
+        const tone = {
+          player_blackjack: 'outcome--win',
+          player_win: 'outcome--win',
+          dealer_bust: 'outcome--win',
+          dealer_blackjack: 'outcome--loss',
+          dealer_win: 'outcome--loss',
+          player_bust: 'outcome--loss',
+          push: 'outcome--push',
+        }[outcome] || 'outcome--neutral';
+        outcomeEl.className = `outcome ${tone}`;
+      }
+
+      function clearChipSelection() {
+        chipButtons.forEach((button) => button.classList.remove('chip-button--active'));
+      }
+
       function updateAuthUI() {
         if (profile) {
-          balanceEl.textContent = `Logged in as ${profile.username} — Balance: $${profile.balance}`;
+          balanceEl.textContent = `Logged in as ${profile.username} — Balance: ${formatCurrency(profile.balance)}`;
           logoutButton.disabled = false;
           betInput.disabled = false;
         } else {
@@ -410,7 +695,81 @@ INDEX_HTML = """
           logoutButton.disabled = true;
           betInput.value = '0';
           betInput.disabled = true;
+          clearChipSelection();
         }
+      }
+
+      function renderHand(element, hand, options = {}) {
+        const { hideHoleCard = false } = options;
+        const tilesContainer = element.querySelector('.card-tiles');
+        const totalEl = element.querySelector('.hand-total');
+        if (!tilesContainer || !totalEl) {
+          return;
+        }
+
+        if (!hand.cards.length) {
+          tilesContainer.innerHTML = '<p class=\"muted\">Waiting for deal…</p>';
+          totalEl.textContent = '';
+          element.classList.remove('hand--concealed');
+          return;
+        }
+
+        const suitIcons = {
+          Hearts: '♥',
+          Diamonds: '♦',
+          Clubs: '♣',
+          Spades: '♠',
+        };
+
+        const html = hand.cards
+          .map((card, index) => {
+            const isHole = hideHoleCard && index === 1;
+            if (isHole) {
+              return '<div class=\"card-tile card-back\"></div>';
+            }
+            const suit = card.suit;
+            const suitIcon = suitIcons[suit] || suit;
+            const suitClass = suit === 'Hearts' || suit === 'Diamonds' ? 'red' : 'black';
+            const rankLabel = card.rank === '10' ? '10' : card.rank.charAt(0);
+            return `
+              <div class=\"card-tile ${suitClass}\">
+                <span class=\"corner corner--top\">${rankLabel}${suitIcon}</span>
+                <span class=\"symbol\" aria-hidden=\"true\">${suitIcon}</span>
+                <span class=\"rank\">${card.rank}</span>
+                <span class=\"corner corner--bottom\">${rankLabel}${suitIcon}</span>
+              </div>
+            `;
+          })
+          .join('');
+
+        tilesContainer.innerHTML = html;
+        if (hideHoleCard) {
+          element.classList.add('hand--concealed');
+          totalEl.textContent = 'Total: ??';
+        } else {
+          element.classList.remove('hand--concealed');
+          totalEl.textContent = `Total: ${hand.value}`;
+        }
+      }
+
+      function handleGameState(data) {
+        sessionId = data.session_id;
+        const shortId = sessionId.slice(0, 8);
+        const betLabel = data.bet ? ` • Bet: ${formatCurrency(data.bet)}` : '';
+        sessionInfoEl.innerHTML = `Session <span>${shortId}…</span>${betLabel}`;
+        renderHand(playerHandEl, data.player_hand);
+        const hideDealerCard = !data.is_over && data.dealer_hand.cards.length > 1;
+        renderHand(dealerHandEl, data.dealer_hand, { hideHoleCard: hideDealerCard });
+        outcomeEl.textContent = formatOutcome(data.outcome, data.is_over);
+        updateOutcomeTone(data.outcome);
+        if (typeof data.balance === 'number' && profile) {
+          profile.balance = data.balance;
+          updateAuthUI();
+        }
+        const actionEnabled = !data.is_over;
+        hitButton.disabled = !actionEnabled;
+        standButton.disabled = !actionEnabled;
+        return data;
       }
 
       function formatOutcome(outcome, isOver) {
@@ -424,38 +783,9 @@ INDEX_HTML = """
           dealer_blackjack: 'Dealer has blackjack.',
           dealer_win: 'Dealer wins.',
           player_bust: 'Bust! Dealer wins.',
-          push: 'Push — it\'s a tie.',
+          push: "Push — it's a tie.",
         };
         return mapping[outcome] || outcome.replace('_', ' ');
-      }
-
-      function renderHand(element, hand) {
-        const tiles = hand.cards
-          .map((card) => `
-            <div class=\"card-tile\">
-              <span class=\"rank\">${card.rank}</span>
-              <span class=\"suit\">${card.suit}</span>
-            </div>
-          `)
-          .join('');
-        element.querySelector('.card-tiles').innerHTML = tiles || '<p class=\"muted\">Waiting for deal…</p>';
-        element.querySelector('.hand-total').textContent = hand.cards.length ? `Total: ${hand.value}` : '';
-      }
-
-      function handleGameState(data) {
-        sessionId = data.session_id;
-        sessionInfoEl.textContent = `Session: ${sessionId}`;
-        renderHand(playerHandEl, data.player_hand);
-        renderHand(dealerHandEl, data.dealer_hand);
-        outcomeEl.textContent = formatOutcome(data.outcome, data.is_over);
-        if (typeof data.balance === 'number' && profile) {
-          profile.balance = data.balance;
-          updateAuthUI();
-        }
-        const actionEnabled = !data.is_over;
-        hitButton.disabled = !actionEnabled;
-        standButton.disabled = !actionEnabled;
-        return data;
       }
 
       async function postJson(path, body, headers = {}) {
@@ -559,6 +889,7 @@ INDEX_HTML = """
         try {
           const data = await postJson('/game/start', { bet });
           handleGameState(data);
+          clearChipSelection();
           setStatus('Hand dealt — good luck!', 'success');
         } catch (error) {
           setStatus(error.message, 'error');
@@ -591,6 +922,19 @@ INDEX_HTML = """
         } catch (error) {
           setStatus(error.message, 'error');
         }
+      });
+
+      chipButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const amount = parseInt(button.dataset.chip, 10) || 0;
+          if (!profile) {
+            setStatus('Sign in to wager with chips.', 'warning');
+            return;
+          }
+          betInput.value = amount;
+          clearChipSelection();
+          button.classList.add('chip-button--active');
+        });
       });
 
       updateAuthUI();
