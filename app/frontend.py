@@ -11,14 +11,17 @@ INDEX_HTML = """
 <html lang=\"en\">
   <head>
     <meta charset=\"utf-8\" />
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-    <title>OpenBlackJack</title>
+    <meta
+      name=\"viewport\"
+      content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\"
+    />
+    <title>OpenBlackJack Arcade</title>
     <style>
       :root {
         color-scheme: dark;
         --bg: #020617;
-        --bg-secondary: #052527;
-        --panel: rgba(6, 15, 32, 0.85);
+        --bg-secondary: #041621;
+        --panel: rgba(4, 17, 34, 0.85);
         --panel-border: rgba(148, 163, 184, 0.18);
         --text-primary: #f8fafc;
         --text-muted: rgba(226, 232, 240, 0.75);
@@ -30,7 +33,7 @@ INDEX_HTML = """
         --win: #4ade80;
         --loss: #f87171;
         --push: #facc15;
-        --shadow: rgba(7, 11, 27, 0.6);
+        --shadow: rgba(7, 11, 27, 0.55);
       }
 
       * {
@@ -42,15 +45,15 @@ INDEX_HTML = """
         font-family: \"Inter\", \"Segoe UI\", system-ui, -apple-system, sans-serif;
         background: radial-gradient(circle at 20% 20%, rgba(14, 116, 144, 0.25), transparent 55%),
           radial-gradient(circle at 80% 0%, rgba(17, 94, 89, 0.3), transparent 40%),
-          linear-gradient(160deg, #001219 0%, #020617 45%, #010409 100%);
+          linear-gradient(150deg, #001219 0%, #020617 55%, #010409 100%);
         color: var(--text-primary);
         min-height: 100vh;
       }
 
       .app-shell {
-        width: min(1150px, 100%);
+        width: min(1160px, 100%);
         margin: 0 auto;
-        padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
+        padding: clamp(1rem, 3vw, 2.5rem);
         display: flex;
         flex-direction: column;
         gap: 1.75rem;
@@ -60,7 +63,7 @@ INDEX_HTML = """
       .app-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         flex-wrap: wrap;
         gap: 1rem 2rem;
       }
@@ -68,33 +71,16 @@ INDEX_HTML = """
       h1 {
         margin: 0;
         font-size: clamp(2rem, 6vw, 3.1rem);
-        font-family: \"Inter\", \"Segoe UI\", Roboto, sans-serif;
-        background: linear-gradient(160deg, #000428, #004e92);
-        color: var(--text);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 1.5rem;
-      }
-
-      header {
-        width: min(100%, 1100px);
-        text-align: center;
-        margin-bottom: 1.5rem;
-      }
-
-      h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        margin-bottom: 0.25rem;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
+        font-weight: 800;
       }
 
       .tagline {
-        margin: 0.4rem 0 0;
+        margin: 0.35rem 0 0;
         color: var(--text-muted);
         font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+        letter-spacing: 0.03em;
       }
 
       .status-badge {
@@ -104,47 +90,46 @@ INDEX_HTML = """
         background: rgba(14, 116, 144, 0.12);
         font-size: 0.95rem;
         letter-spacing: 0.02em;
-        transition: background 0.2s ease, border 0.2s ease, color 0.2s ease;
+        transition: background 0.25s ease, border 0.25s ease, transform 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        text-align: center;
       }
 
-      .status--info {
-        color: var(--accent);
-        background: rgba(34, 211, 238, 0.12);
-        border-color: rgba(34, 211, 238, 0.35);
-      }
-
-      .status--success {
+      .status-badge[data-tone='success'] {
         color: var(--success);
-        background: rgba(52, 211, 153, 0.12);
         border-color: rgba(52, 211, 153, 0.35);
+        background: rgba(52, 211, 153, 0.12);
       }
 
-      .status--error {
+      .status-badge[data-tone='error'] {
         color: var(--danger);
-        background: rgba(248, 113, 113, 0.12);
         border-color: rgba(248, 113, 113, 0.35);
+        background: rgba(248, 113, 113, 0.12);
       }
 
-      .status--warning {
+      .status-badge[data-tone='warning'] {
         color: var(--warning);
-        background: rgba(251, 191, 36, 0.12);
         border-color: rgba(251, 191, 36, 0.35);
+        background: rgba(251, 191, 36, 0.12);
       }
 
       main.layout {
         display: grid;
-        grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
         gap: 1.5rem;
         align-items: stretch;
       }
 
       .panel {
         background: var(--panel);
-        border-radius: 22px;
+        border-radius: 24px;
         border: 1px solid var(--panel-border);
         padding: clamp(1.25rem, 3vw, 1.75rem);
         backdrop-filter: blur(18px);
-        box-shadow: 0 30px 70px var(--shadow);
+        box-shadow: 0 35px 75px var(--shadow);
         display: flex;
         flex-direction: column;
         gap: 1.4rem;
@@ -154,17 +139,7 @@ INDEX_HTML = """
         margin: 0;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        font-size: 1.1rem;
-      }
-
-      .panel--auth .panel-section {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .panel--auth .forms {
-        gap: 1.25rem;
+        font-size: 1.05rem;
       }
 
       .balance {
@@ -172,15 +147,103 @@ INDEX_HTML = """
         font-size: 1.05rem;
       }
 
+      .table-surface {
+        position: relative;
+        min-height: 340px;
+        border-radius: 24px;
+        padding: clamp(1.25rem, 4vw, 2rem);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        background: radial-gradient(circle at 50% 15%, rgba(45, 212, 191, 0.25), transparent 55%),
+          radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.18), transparent 45%),
+          linear-gradient(160deg, rgba(4, 30, 49, 0.82), rgba(1, 27, 43, 0.88));
+        overflow: hidden;
+      }
+
+      #phaser-stage {
+        width: 100%;
+        height: 100%;
+      }
+
+      .table-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: clamp(1rem, 3vw, 1.75rem);
+      }
+
+      .hand-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        align-items: flex-start;
+      }
+
+      .hand-meta h3 {
+        margin: 0;
+        font-size: 0.95rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .hand-total {
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+      }
+
+      .hand-meta .hand-status {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        letter-spacing: 0.02em;
+      }
+
+      .hand-meta.hand--concealed .hand-total {
+        color: rgba(226, 232, 240, 0.75);
+      }
+
       .session-id {
+        align-self: center;
         font-family: \"Fira Code\", \"Source Code Pro\", monospace;
         font-size: 0.85rem;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.04em;
         color: var(--text-muted);
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.2);
       }
 
       .session-id span {
         color: var(--accent);
+      }
+
+      .table-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .outcome {
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .outcome.outcome--win {
+        color: var(--win);
+      }
+
+      .outcome.outcome--loss {
+        color: var(--loss);
+      }
+
+      .outcome.outcome--push {
+        color: var(--push);
       }
 
       form {
@@ -189,34 +252,35 @@ INDEX_HTML = """
         gap: 0.75rem;
       }
 
-      .form-card {
-        padding: 1rem;
-        border-radius: 16px;
-        background: rgba(15, 23, 42, 0.4);
-        border: 1px solid rgba(148, 163, 184, 0.12);
+      .bet-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        align-items: flex-end;
       }
 
-      .form-card h3 {
-        margin: 0;
-        font-size: 1.05rem;
+      .bet-controls label {
+        flex: 1 1 220px;
+        min-width: 180px;
       }
 
       label {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         font-weight: 600;
         display: flex;
         flex-direction: column;
-        gap: 0.35rem;
+        gap: 0.4rem;
       }
 
       input {
-        padding: 0.65rem 0.8rem;
-        border-radius: 10px;
+        padding: 0.7rem 0.85rem;
+        border-radius: 12px;
         border: 1px solid rgba(148, 163, 184, 0.35);
         background: rgba(2, 6, 23, 0.35);
         color: inherit;
         font-size: 1rem;
         transition: border 0.2s ease, box-shadow 0.2s ease;
+        touch-action: manipulation;
       }
 
       input:focus {
@@ -228,8 +292,8 @@ INDEX_HTML = """
       button {
         cursor: pointer;
         border: none;
-        border-radius: 12px;
-        padding: 0.75rem 1.2rem;
+        border-radius: 14px;
+        padding: 0.8rem 1.3rem;
         font-weight: 600;
         font-size: 1rem;
         letter-spacing: 0.03em;
@@ -238,6 +302,7 @@ INDEX_HTML = """
         align-items: center;
         gap: 0.45rem;
         transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+        touch-action: manipulation;
       }
 
       button:disabled {
@@ -250,12 +315,12 @@ INDEX_HTML = """
       button.primary {
         background: linear-gradient(135deg, var(--accent), var(--accent-strong));
         color: #001219;
-        box-shadow: 0 12px 30px rgba(14, 165, 233, 0.35);
+        box-shadow: 0 16px 36px rgba(14, 165, 233, 0.35);
       }
 
       button.primary:hover:not(:disabled) {
         transform: translateY(-1px);
-        box-shadow: 0 16px 36px rgba(34, 211, 238, 0.4);
+        box-shadow: 0 20px 42px rgba(34, 211, 238, 0.4);
       }
 
       button.secondary {
@@ -268,10 +333,37 @@ INDEX_HTML = """
         background: rgba(15, 23, 42, 0.65);
       }
 
-      .auth-actions {
+      .chip-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.65rem;
+        gap: 0.55rem;
+      }
+
+      .chip-button {
+        border-radius: 999px;
+        padding: 0.6rem 0.95rem;
+        font-size: 0.95rem;
+        border: 1px solid rgba(34, 211, 238, 0.45);
+        background: rgba(14, 165, 233, 0.16);
+        color: var(--accent);
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+
+      .chip-button:hover:not(:disabled) {
+        background: rgba(14, 165, 233, 0.26);
+        transform: translateY(-1px);
+      }
+
+      .chip-button--active {
+        background: linear-gradient(135deg, rgba(34, 211, 238, 0.85), rgba(14, 165, 233, 0.85));
+        color: #001219;
+        box-shadow: 0 12px 30px rgba(14, 165, 233, 0.35);
+      }
+
+      .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
       }
 
       .muted {
@@ -279,212 +371,16 @@ INDEX_HTML = """
         font-size: 0.85rem;
       }
 
-      .panel--table {
-        gap: 1.5rem;
-      }
-
-      .table-surface {
-        background: radial-gradient(circle, rgba(6, 78, 59, 0.6) 0%, rgba(2, 44, 34, 0.55) 55%, rgba(1, 22, 39, 0.65) 100%);
-        border-radius: 22px;
-        padding: clamp(1.25rem, 4vw, 2rem);
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .table-surface::before {
-        content: \"\";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.15), transparent 55%);
-        pointer-events: none;
-      }
-
-      .table-row {
+      .panel--auth .panel-section {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
         gap: 1rem;
-        flex-wrap: wrap;
       }
 
-      .hand-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.9rem;
-        padding: 0.75rem;
-        text-align: center;
-      }
-
-      .hand-wrapper h3 {
-        margin: 0;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        font-size: 0.95rem;
-      }
-
-      .card-tiles {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        justify-content: center;
-        min-height: 110px;
-      }
-
-      .card-tile {
-        position: relative;
-        width: 72px;
-        height: 104px;
-        border-radius: 14px;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border: 1px solid rgba(15, 23, 42, 0.15);
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.4);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #0f172a;
-        overflow: hidden;
-      }
-
-      .card-tile.red {
-        color: #dc2626;
-      }
-
-      .card-tile.black {
-        color: #0f172a;
-      }
-
-      .card-tile .corner {
-        position: absolute;
-        font-size: 0.72rem;
-        font-weight: 600;
-      }
-
-      .card-tile .corner--top {
-        top: 8px;
-        left: 8px;
-      }
-
-      .card-tile .corner--bottom {
-        bottom: 8px;
-        right: 8px;
-        transform: rotate(180deg);
-      }
-
-      .card-tile .symbol {
-        font-size: 2.15rem;
-        line-height: 1;
-      }
-
-      .card-tile .rank {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        opacity: 0.65;
-      }
-
-      .card-back {
-        background: repeating-linear-gradient(45deg, rgba(2, 44, 34, 0.85), rgba(2, 44, 34, 0.85) 8px, rgba(15, 118, 110, 0.85) 8px, rgba(15, 118, 110, 0.85) 16px);
-        border: 1px solid rgba(34, 211, 238, 0.4);
-      }
-
-      .card-back::after {
-        content: \"\";
-        position: absolute;
-        inset: 12px;
-        border-radius: 10px;
-        border: 1px dashed rgba(226, 232, 240, 0.35);
-      }
-
-      .hand-total {
-        font-size: 0.9rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: rgba(226, 232, 240, 0.9);
-      }
-
-      .hand-wrapper.hand--concealed .hand-total {
-        color: rgba(226, 232, 240, 0.65);
-      }
-
-      .hand-wrapper.hand--concealed .hand-total::after {
-        content: \" • dealer is hiding a card\";
-        text-transform: none;
-        font-size: 0.75rem;
-        letter-spacing: 0;
-      }
-
-      .table-footer {
-        display: flex;
-        flex-direction: column;
-        gap: 1.1rem;
-      }
-
-      .outcome {
-        font-weight: 700;
-        font-size: 1.1rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-      }
-
-      .outcome--win {
-        color: var(--win);
-      }
-
-      .outcome--loss {
-        color: var(--loss);
-      }
-
-      .outcome--push {
-        color: var(--push);
-      }
-
-      .bet-controls {
+      .auth-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem;
-        align-items: flex-end;
-      }
-
-      .bet-controls label {
-        flex: 1;
-        min-width: 180px;
-      }
-
-      .bet-controls input[type=\"number\"] {
-        max-width: 220px;
-      }
-
-      .chip-row {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-
-      .chip-button {
-        border-radius: 999px;
-        padding: 0.55rem 0.9rem;
-        font-size: 0.95rem;
-        border: 1px solid rgba(34, 211, 238, 0.45);
-        background: rgba(14, 165, 233, 0.16);
-        color: var(--accent);
-      }
-
-      .chip-button:hover:not(:disabled) {
-        background: rgba(14, 165, 233, 0.26);
-      }
-
-      .chip-button--active {
-        background: linear-gradient(135deg, rgba(34, 211, 238, 0.85), rgba(14, 165, 233, 0.85));
-        color: #001219;
-      }
-
-      .action-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: 0.65rem;
       }
 
       footer {
@@ -514,7 +410,7 @@ INDEX_HTML = """
 
       @media (max-width: 640px) {
         .app-shell {
-          padding: 1.25rem 1rem 2rem;
+          padding: 1rem 1rem 2rem;
         }
 
         .app-header {
@@ -522,153 +418,427 @@ INDEX_HTML = """
           align-items: flex-start;
         }
 
-        .card-tile {
-          width: 62px;
-          height: 94px;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .bet-controls label {
-          min-width: 100%;
-        }
-
-        .bet-controls {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .action-buttons {
-          flex-direction: column;
-        }
-
-        button {
+        .status-badge {
           width: 100%;
         }
       }
     </style>
+    <script src=\"https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js\"></script>
   </head>
   <body>
     <div class=\"app-shell\">
       <header class=\"app-header\">
         <div>
           <h1>OpenBlackJack</h1>
-          <p class=\"tagline\">Casino-style single-player blackjack with instant play.</p>
+          <p class=\"tagline\">Arcade-style single player blackjack.</p>
         </div>
-        <div class=\"status-badge status--info\" id=\"status\">Play as a guest or sign in to start betting.</div>
+        <div id=\"status\" class=\"status-badge\" data-tone=\"info\" role=\"status\">
+          Chargement de la table…
+        </div>
       </header>
+
+      <div class=\"balance\" id=\"balance\">Mode invité — mises désactivées.</div>
+
       <main class=\"layout\">
-        <aside class=\"panel panel--auth\">
-          <div class=\"panel-section\">
-            <h2>Account</h2>
-            <p class=\"balance\" id=\"balance-area\">Guest mode — betting disabled.</p>
-            <p class=\"session-id\" id=\"session-info\"></p>
-          </div>
-          <div class=\"panel-section forms\">
-            <form id=\"signup-form\" class=\"form-card\">
-              <h3>Create an account</h3>
-              <label>
-                Username
-                <input id=\"signup-username\" name=\"username\" minlength=\"3\" maxlength=\"30\" autocomplete=\"username\" required />
-              </label>
-              <label>
-                Password
-                <input id=\"signup-password\" name=\"password\" type=\"password\" minlength=\"6\" autocomplete=\"new-password\" required />
-              </label>
-              <button class=\"primary\" type=\"submit\">Create account</button>
-              <p class=\"muted\">New accounts instantly receive a $1000 bankroll.</p>
-            </form>
-            <form id=\"login-form\" class=\"form-card\">
-              <h3>Log in</h3>
-              <label>
-                Username
-                <input id=\"login-username\" name=\"username\" autocomplete=\"username\" required />
-              </label>
-              <label>
-                Password
-                <input id=\"login-password\" name=\"password\" type=\"password\" autocomplete=\"current-password\" required />
-              </label>
-              <button class=\"primary\" type=\"submit\">Log in</button>
-            </form>
-            <div class=\"auth-actions\">
-              <button class=\"secondary\" type=\"button\" id=\"guest-button\">Play as guest</button>
-              <button class=\"secondary\" type=\"button\" id=\"logout-button\" disabled>Log out</button>
-            </div>
-          </div>
-        </aside>
         <section class=\"panel panel--table\">
           <div class=\"table-surface\">
-            <div class=\"table-row\">
-              <div class=\"hand-wrapper\" id=\"dealer-hand\">
-                <h3>Dealer</h3>
-                <div class=\"card-tiles\"></div>
-                <div class=\"hand-total\"></div>
+            <div id=\"phaser-stage\" aria-hidden=\"true\"></div>
+            <div class=\"table-overlay\">
+              <div class=\"hand-meta\" id=\"dealer-info\">
+                <h3>DEALER</h3>
+                <p class=\"hand-total\">En attente…</p>
+                <span class=\"hand-status\"></span>
               </div>
-            </div>
-            <div class=\"table-row\">
-              <div class=\"hand-wrapper\" id=\"player-hand\">
-                <h3>Player</h3>
-                <div class=\"card-tiles\"></div>
-                <div class=\"hand-total\"></div>
+              <div class=\"session-id\" id=\"session-info\">Session <span>—</span></div>
+              <div class=\"hand-meta\" id=\"player-info\">
+                <h3>JOUEUR</h3>
+                <p class=\"hand-total\">En attente…</p>
+                <span class=\"hand-status\"></span>
               </div>
             </div>
           </div>
+
           <div class=\"table-footer\">
-            <div class=\"outcome\" id=\"outcome\">Start a hand to begin playing.</div>
-            <form id=\"start-form\" class=\"bet-controls\">
-              <label>
-                Bet amount (USD)
-                <input id=\"bet-input\" name=\"bet\" type=\"number\" min=\"0\" step=\"50\" value=\"0\" />
-              </label>
-              <div class=\"chip-row\">
-                <button class=\"chip-button\" type=\"button\" data-chip=\"50\">$50</button>
-                <button class=\"chip-button\" type=\"button\" data-chip=\"100\">$100</button>
-                <button class=\"chip-button\" type=\"button\" data-chip=\"250\">$250</button>
-                <button class=\"chip-button\" type=\"button\" data-chip=\"500\">$500</button>
+            <div class=\"outcome\" id=\"outcome\">Lancez une main pour commencer.</div>
+
+            <form id=\"start-form\">
+              <div class=\"bet-controls\">
+                <label for=\"bet\">Mise (crédits)
+                  <input id=\"bet\" type=\"number\" min=\"0\" step=\"10\" value=\"0\" />
+                </label>
+                <div class=\"chip-row\">
+                  <button type=\"button\" class=\"chip-button\" data-chip=\"10\">10</button>
+                  <button type=\"button\" class=\"chip-button\" data-chip=\"25\">25</button>
+                  <button type=\"button\" class=\"chip-button\" data-chip=\"50\">50</button>
+                  <button type=\"button\" class=\"chip-button\" data-chip=\"100\">100</button>
+                </div>
               </div>
-              <button class=\"primary\" type=\"submit\">Deal a new hand</button>
+              <div class=\"action-buttons\">
+                <button class=\"primary\" type=\"submit\">Distribuer</button>
+                <button class=\"secondary\" type=\"button\" id=\"hit-button\" disabled>Carte !</button>
+                <button class=\"secondary\" type=\"button\" id=\"stand-button\" disabled>Rester</button>
+              </div>
             </form>
-            <div class=\"action-buttons\">
-              <button class=\"secondary\" type=\"button\" id=\"hit-button\" disabled>Hit</button>
-              <button class=\"secondary\" type=\"button\" id=\"stand-button\" disabled>Stand</button>
+          </div>
+        </section>
+
+        <section class=\"panel panel--auth\">
+          <h2>Connexion</h2>
+          <div class=\"panel-section forms\">
+            <div class=\"form-card\">
+              <h3>Inscription</h3>
+              <form id=\"signup-form\">
+                <label>Nom d'utilisateur
+                  <input id=\"signup-username\" autocomplete=\"username\" required />
+                </label>
+                <label>Mot de passe
+                  <input id=\"signup-password\" type=\"password\" autocomplete=\"new-password\" required />
+                </label>
+                <button class=\"primary\" type=\"submit\">Créer un compte</button>
+              </form>
             </div>
+            <div class=\"form-card\">
+              <h3>Connexion</h3>
+              <form id=\"login-form\">
+                <label>Nom d'utilisateur
+                  <input id=\"login-username\" autocomplete=\"username\" required />
+                </label>
+                <label>Mot de passe
+                  <input id=\"login-password\" type=\"password\" autocomplete=\"current-password\" required />
+                </label>
+                <button class=\"primary\" type=\"submit\">Se connecter</button>
+              </form>
+            </div>
+          </div>
+          <div class=\"panel-section\">
+            <div class=\"auth-actions\">
+              <button class=\"secondary\" type=\"button\" id=\"guest-button\">Jouer en invité</button>
+              <button class=\"secondary\" type=\"button\" id=\"logout-button\" disabled>Se déconnecter</button>
+            </div>
+            <p class=\"muted\">
+              Les comptes sauvegardent vos crédits et permettent les mises. En invité, les mises sont bloquées.
+            </p>
           </div>
         </section>
       </main>
-      <footer>Need the API? Explore the interactive docs at <code>/docs</code>.</footer>
+
+      <footer>
+        OpenBlackJack propulsé par <code>FastAPI</code> et un rendu Phaser côté client.
+      </footer>
     </div>
+
     <script>
+      class BlackjackAnimator {
+        constructor(mountId) {
+          this.mountId = mountId;
+          this.scene = null;
+          this.cardSprites = { player: [], dealer: [] };
+          this.pendingState = null;
+          if (!window.Phaser) {
+            return;
+          }
+          const animator = this;
+          this.game = new Phaser.Game({
+            type: Phaser.AUTO,
+            parent: mountId,
+            transparent: true,
+            scale: {
+              mode: Phaser.Scale.FIT,
+              autoCenter: Phaser.Scale.CENTER_BOTH,
+              width: 720,
+              height: 360,
+            },
+            scene: {
+              create() {
+                animator.scene = this;
+                animator.buildTable();
+                if (animator.pendingState) {
+                  const { player, dealer, options } = animator.pendingState;
+                  animator.updateHands(player, dealer, options);
+                  animator.pendingState = null;
+                }
+              },
+            },
+          });
+        }
+
+        buildTable() {
+          const scene = this.scene;
+          if (!scene) {
+            return;
+          }
+          const { width, height } = scene.scale;
+          const table = scene.add.rectangle(width / 2, height / 2, width * 0.9, height * 0.8, 0x083344, 0.75);
+          table.setStrokeStyle(2, 0x22d3ee, 0.3);
+          const glow = scene.add.ellipse(width / 2, height / 2, width * 0.6, height * 0.35, 0x0ea5e9, 0.15);
+          scene.tweens.add({
+            targets: glow,
+            scaleX: 1.08,
+            scaleY: 1.12,
+            alpha: 0.18,
+            yoyo: true,
+            duration: 2400,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+          });
+          this.deckPosition = new Phaser.Math.Vector2(width - 80, height / 2);
+          this.createFloatingChips();
+        }
+
+        createFloatingChips() {
+          const scene = this.scene;
+          if (!scene) {
+            return;
+          }
+          const colors = [0x22d3ee, 0xfacc15, 0x34d399];
+          colors.forEach((color, index) => {
+            const chip = scene.add.circle(90 + index * 60, scene.scale.height - 60, 18, color, 0.8);
+            chip.setStrokeStyle(3, 0xffffff, 0.6);
+            scene.tweens.add({
+              targets: chip,
+              y: chip.y - 12,
+              duration: 1600 + index * 180,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut',
+            });
+          });
+        }
+
+        ensureSceneReady(player, dealer, options) {
+          if (!this.scene) {
+            this.pendingState = { player, dealer, options };
+            return false;
+          }
+          return true;
+        }
+
+        populateCard(container, card, hidden) {
+          const scene = this.scene;
+          if (!scene) {
+            return;
+          }
+          container.removeAll(true);
+          if (hidden) {
+            const bg = scene.add.rectangle(0, 0, 92, 128, 0x052527, 0.95);
+            bg.setStrokeStyle(2, 0x22d3ee, 0.5);
+            const inner = scene.add.rectangle(0, 0, 72, 108, 0x0b3740, 0.95);
+            inner.setStrokeStyle(2, 0xffffff, 0.25);
+            const emblem = scene.add.text(0, 0, 'OB', {
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '28px',
+              fontStyle: '700',
+              color: '#22d3ee',
+            });
+            emblem.setOrigin(0.5, 0.5);
+            container.add([bg, inner, emblem]);
+          } else {
+            const bg = scene.add.rectangle(0, 0, 92, 128, 0xf8fafc, 0.96);
+            bg.setStrokeStyle(2, 0x0f172a, 0.18);
+            const suitSymbols = { Hearts: '♥', Diamonds: '♦', Clubs: '♣', Spades: '♠' };
+            const suitSymbol = suitSymbols[card.suit] || card.suit.charAt(0);
+            const rankLabel = card.rank.length > 2 ? card.rank.charAt(0) : card.rank;
+            const isRed = card.suit === 'Hearts' || card.suit === 'Diamonds';
+            const color = isRed ? '#dc2626' : '#0f172a';
+            const suit = scene.add.text(0, 18, suitSymbol, {
+              fontFamily: 'Georgia, serif',
+              fontSize: '36px',
+              color,
+            });
+            suit.setOrigin(0.5, 0.5);
+            const rank = scene.add.text(0, -22, rankLabel, {
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '28px',
+              fontStyle: '700',
+              color,
+            });
+            rank.setOrigin(0.5, 0.5);
+            const cornerTop = scene.add.text(-28, -46, `${rankLabel}${suitSymbol}`, {
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '14px',
+              fontStyle: '600',
+              color,
+            });
+            cornerTop.setOrigin(0, 0);
+            const cornerBottom = scene.add.text(28, 46, `${rankLabel}${suitSymbol}`, {
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '14px',
+              fontStyle: '600',
+              color,
+            });
+            cornerBottom.setOrigin(1, 1);
+            container.add([bg, suit, rank, cornerTop, cornerBottom]);
+          }
+          container.setData('card', card);
+          container.setData('hidden', hidden);
+        }
+
+        updateHands(player, dealer, options = {}) {
+          if (!this.ensureSceneReady(player, dealer, options)) {
+            return;
+          }
+          this.syncHand('dealer', dealer.cards, { hideHoleCard: options.hideHoleCard, y: 110 });
+          this.syncHand('player', player.cards, { hideHoleCard: false, y: this.scene.scale.height - 110 });
+        }
+
+        syncHand(owner, cards, config) {
+          const scene = this.scene;
+          if (!scene) {
+            return;
+          }
+          const spacing = 110;
+          const baseX = scene.scale.width / 2 - ((cards.length - 1) * spacing) / 2;
+          const existing = this.cardSprites[owner];
+          while (existing.length > cards.length) {
+            const sprite = existing.pop();
+            if (sprite.container) {
+              scene.tweens.add({
+                targets: sprite.container,
+                y: sprite.container.y + 60,
+                alpha: 0,
+                duration: 240,
+                ease: 'Quad.easeIn',
+                onComplete: () => {
+                  sprite.container.removeAll(true);
+                  sprite.container.destroy();
+                },
+              });
+            }
+          }
+          cards.forEach((card, index) => {
+            const isHole = config.hideHoleCard && index === 1;
+            const targetX = baseX + index * spacing;
+            let sprite = existing[index];
+            if (!sprite) {
+              const container = scene.add.container(this.deckPosition.x, this.deckPosition.y);
+              container.setSize(92, 128);
+              container.alpha = 0;
+              this.populateCard(container, card, isHole);
+              scene.tweens.add({
+                targets: container,
+                x: targetX,
+                y: config.y,
+                alpha: 1,
+                angle: Phaser.Math.Between(-5, 5),
+                duration: 420,
+                ease: 'Cubic.easeOut',
+                delay: index * 100,
+              });
+              scene.tweens.add({
+                targets: container,
+                scaleX: 1.02,
+                scaleY: 1.02,
+                yoyo: true,
+                duration: 400,
+                repeat: -1,
+                ease: 'Sine.easeInOut',
+                delay: 600 + index * 120,
+              });
+              existing[index] = { container };
+              sprite = existing[index];
+            } else {
+              scene.tweens.add({
+                targets: sprite.container,
+                x: targetX,
+                y: config.y,
+                angle: Phaser.Math.Between(-5, 5),
+                duration: 280,
+                ease: 'Cubic.easeOut',
+              });
+              const wasHidden = sprite.container.getData('hidden');
+              if (wasHidden && !isHole) {
+                this.revealCard(sprite.container, card);
+              } else if (!wasHidden) {
+                const previous = sprite.container.getData('card');
+                if (!previous || previous.rank !== card.rank || previous.suit !== card.suit) {
+                  this.populateCard(sprite.container, card, false);
+                }
+              }
+            }
+            sprite.container.setData('card', card);
+            sprite.container.setData('hidden', isHole);
+          });
+        }
+
+        revealCard(container, card) {
+          const scene = this.scene;
+          if (!scene) {
+            return;
+          }
+          scene.tweens.add({
+            targets: container,
+            scaleX: 0,
+            duration: 160,
+            ease: 'Quad.easeIn',
+            onComplete: () => {
+              this.populateCard(container, card, false);
+              scene.tweens.add({
+                targets: container,
+                scaleX: 1,
+                duration: 180,
+                ease: 'Quad.easeOut',
+              });
+            },
+          });
+        }
+      }
+
       const statusEl = document.getElementById('status');
-      const balanceEl = document.getElementById('balance-area');
+      const balanceEl = document.getElementById('balance');
       const sessionInfoEl = document.getElementById('session-info');
       const outcomeEl = document.getElementById('outcome');
-      const playerHandEl = document.getElementById('player-hand');
-      const dealerHandEl = document.getElementById('dealer-hand');
-      const betInput = document.getElementById('bet-input');
+      const dealerInfoEl = document.getElementById('dealer-info');
+      const playerInfoEl = document.getElementById('player-info');
+      const betInput = document.getElementById('bet');
       const hitButton = document.getElementById('hit-button');
       const standButton = document.getElementById('stand-button');
       const logoutButton = document.getElementById('logout-button');
-      const chipButtons = Array.from(document.querySelectorAll('[data-chip]'));
+      const chipButtons = Array.from(document.querySelectorAll('.chip-button'));
+      const animator = window.Phaser ? new BlackjackAnimator('phaser-stage') : null;
+      if (!animator) {
+        document.getElementById('phaser-stage').innerHTML = '<p class=\"muted\">Chargement Phaser impossible. Les cartes seront statiques.</p>';
+      }
 
-      let token = null;
+      let token = window.localStorage.getItem('openblackjack_token');
       let profile = null;
       let sessionId = null;
 
-      function setStatus(message, tone = 'info') {
-        statusEl.textContent = message;
-        statusEl.className = `status-badge status--${tone}`;
+      function persistToken(value) {
+        if (!value) {
+          window.localStorage.removeItem('openblackjack_token');
+        } else {
+          window.localStorage.setItem('openblackjack_token', value);
+        }
       }
 
       function authHeaders() {
-        return token ? { Authorization: `Bearer ${token}` } : {};
+        if (!token) {
+          return {};
+        }
+        return { Authorization: `Bearer ${token}` };
       }
 
       function formatCurrency(value) {
-        const amount = Number(value || 0);
-        return `$${amount.toLocaleString('en-US')}`;
+        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'USD' }).format(value);
+      }
+
+      function setStatus(message, tone = 'info') {
+        statusEl.textContent = message;
+        statusEl.dataset.tone = tone;
+        statusEl.animate(
+          [
+            { transform: 'scale(0.98)', opacity: 0.6 },
+            { transform: 'scale(1)', opacity: 1 },
+          ],
+          { duration: 220, easing: 'ease-out' }
+        );
       }
 
       function updateOutcomeTone(outcome) {
+        outcomeEl.classList.remove('outcome--win', 'outcome--loss', 'outcome--push');
+        if (!outcome) {
+          return;
+        }
         const tone = {
           player_blackjack: 'outcome--win',
           player_win: 'outcome--win',
@@ -677,8 +847,10 @@ INDEX_HTML = """
           dealer_win: 'outcome--loss',
           player_bust: 'outcome--loss',
           push: 'outcome--push',
-        }[outcome] || 'outcome--neutral';
-        outcomeEl.className = `outcome ${tone}`;
+        }[outcome];
+        if (tone) {
+          outcomeEl.classList.add(tone);
+        }
       }
 
       function clearChipSelection() {
@@ -687,11 +859,11 @@ INDEX_HTML = """
 
       function updateAuthUI() {
         if (profile) {
-          balanceEl.textContent = `Logged in as ${profile.username} — Balance: ${formatCurrency(profile.balance)}`;
+          balanceEl.textContent = `Connecté en tant que ${profile.username} — Solde : ${formatCurrency(profile.balance)}`;
           logoutButton.disabled = false;
           betInput.disabled = false;
         } else {
-          balanceEl.textContent = 'Guest mode — betting disabled.';
+          balanceEl.textContent = 'Mode invité — mises désactivées.';
           logoutButton.disabled = true;
           betInput.value = '0';
           betInput.disabled = true;
@@ -699,91 +871,41 @@ INDEX_HTML = """
         }
       }
 
-      function renderHand(element, hand, options = {}) {
-        const { hideHoleCard = false } = options;
-        const tilesContainer = element.querySelector('.card-tiles');
+      function updateHandInfo(element, hand, options = {}) {
         const totalEl = element.querySelector('.hand-total');
-        if (!tilesContainer || !totalEl) {
+        const statusEl = element.querySelector('.hand-status');
+        if (!totalEl || !statusEl) {
           return;
         }
-
         if (!hand.cards.length) {
-          tilesContainer.innerHTML = '<p class=\"muted\">Waiting for deal…</p>';
-          totalEl.textContent = '';
+          totalEl.textContent = 'En attente…';
+          statusEl.textContent = '';
           element.classList.remove('hand--concealed');
           return;
         }
-
-        const suitIcons = {
-          Hearts: '♥',
-          Diamonds: '♦',
-          Clubs: '♣',
-          Spades: '♠',
-        };
-
-        const html = hand.cards
-          .map((card, index) => {
-            const isHole = hideHoleCard && index === 1;
-            if (isHole) {
-              return '<div class=\"card-tile card-back\"></div>';
-            }
-            const suit = card.suit;
-            const suitIcon = suitIcons[suit] || suit;
-            const suitClass = suit === 'Hearts' || suit === 'Diamonds' ? 'red' : 'black';
-            const rankLabel = card.rank === '10' ? '10' : card.rank.charAt(0);
-            return `
-              <div class=\"card-tile ${suitClass}\">
-                <span class=\"corner corner--top\">${rankLabel}${suitIcon}</span>
-                <span class=\"symbol\" aria-hidden=\"true\">${suitIcon}</span>
-                <span class=\"rank\">${card.rank}</span>
-                <span class=\"corner corner--bottom\">${rankLabel}${suitIcon}</span>
-              </div>
-            `;
-          })
-          .join('');
-
-        tilesContainer.innerHTML = html;
-        if (hideHoleCard) {
+        if (options.hideHoleCard) {
+          totalEl.textContent = 'Total : ??';
+          statusEl.textContent = 'Le croupier cache une carte.';
           element.classList.add('hand--concealed');
-          totalEl.textContent = 'Total: ??';
         } else {
+          totalEl.textContent = `Total : ${hand.value}`;
+          statusEl.textContent = '';
           element.classList.remove('hand--concealed');
-          totalEl.textContent = `Total: ${hand.value}`;
         }
-      }
-
-      function handleGameState(data) {
-        sessionId = data.session_id;
-        const shortId = sessionId.slice(0, 8);
-        const betLabel = data.bet ? ` • Bet: ${formatCurrency(data.bet)}` : '';
-        sessionInfoEl.innerHTML = `Session <span>${shortId}…</span>${betLabel}`;
-        renderHand(playerHandEl, data.player_hand);
-        const hideDealerCard = !data.is_over && data.dealer_hand.cards.length > 1;
-        renderHand(dealerHandEl, data.dealer_hand, { hideHoleCard: hideDealerCard });
-        outcomeEl.textContent = formatOutcome(data.outcome, data.is_over);
-        updateOutcomeTone(data.outcome);
-        if (typeof data.balance === 'number' && profile) {
-          profile.balance = data.balance;
-          updateAuthUI();
-        }
-        const actionEnabled = !data.is_over;
-        hitButton.disabled = !actionEnabled;
-        standButton.disabled = !actionEnabled;
-        return data;
       }
 
       function formatOutcome(outcome, isOver) {
         if (!outcome) {
-          return isOver ? 'Hand complete.' : 'Hand in progress — take your action!';
+          return isOver ? 'Main terminée.' : 'Main en cours — jouez !';
         }
         const mapping = {
-          player_blackjack: 'Blackjack! You win 3:2.',
-          player_win: 'You win!',
-          dealer_bust: 'Dealer busts — you win!',
-          dealer_blackjack: 'Dealer has blackjack.',
-          dealer_win: 'Dealer wins.',
-          player_bust: 'Bust! Dealer wins.',
-          push: "Push — it's a tie.",
+          player_blackjack: 'Blackjack ! Vous gagnez 3:2.',
+          player_win: 'Vous gagnez !',
+          dealer_bust: 'Le croupier saute — victoire !',
+          dealer_blackjack: 'Blackjack du croupier.',
+          dealer_win: 'Le croupier gagne.',
+          player_bust: 'Vous dépassez 21 — perdu.',
+          push: "Egalité — la mise est rendue.",
         };
         return mapping[outcome] || outcome.replace('_', ' ');
       }
@@ -795,7 +917,7 @@ INDEX_HTML = """
           body: JSON.stringify(body),
         });
         if (!response.ok) {
-          let message = 'Request failed.';
+          let message = 'Requête échouée.';
           try {
             const payload = await response.json();
             message = payload.detail || JSON.stringify(payload);
@@ -816,17 +938,41 @@ INDEX_HTML = """
         try {
           const response = await fetch('/me', { headers: { ...authHeaders() } });
           if (!response.ok) {
-            throw new Error('Unable to fetch profile.');
+            throw new Error('Impossible de récupérer le profil.');
           }
           profile = await response.json();
           updateAuthUI();
-          setStatus('Logged in successfully.', 'success');
+          setStatus('Connexion réussie.', 'success');
         } catch (error) {
           token = null;
           profile = null;
+          persistToken(null);
           updateAuthUI();
           setStatus(error.message, 'error');
         }
+      }
+
+      function handleGameState(data) {
+        sessionId = data.session_id;
+        const shortId = sessionId ? sessionId.slice(0, 8) : '—';
+        const betLabel = data.bet ? ` • Mise : ${formatCurrency(data.bet)}` : '';
+        sessionInfoEl.innerHTML = `Session <span>${shortId}${sessionId ? '…' : ''}</span>${betLabel}`;
+        const hideDealerCard = !data.is_over && data.dealer_hand.cards.length > 1;
+        updateHandInfo(playerInfoEl, data.player_hand);
+        updateHandInfo(dealerInfoEl, data.dealer_hand, { hideHoleCard: hideDealerCard });
+        if (animator) {
+          animator.updateHands(data.player_hand, data.dealer_hand, { hideHoleCard: hideDealerCard });
+        }
+        outcomeEl.textContent = formatOutcome(data.outcome, data.is_over);
+        updateOutcomeTone(data.outcome);
+        if (typeof data.balance === 'number' && profile) {
+          profile.balance = data.balance;
+          updateAuthUI();
+        }
+        const actionEnabled = !data.is_over;
+        hitButton.disabled = !actionEnabled;
+        standButton.disabled = !actionEnabled;
+        return data;
       }
 
       document.getElementById('signup-form').addEventListener('submit', async (event) => {
@@ -834,14 +980,15 @@ INDEX_HTML = """
         const username = document.getElementById('signup-username').value.trim();
         const password = document.getElementById('signup-password').value.trim();
         if (!username || !password) {
-          setStatus('Please provide a username and password.', 'error');
+          setStatus('Veuillez indiquer un nom et un mot de passe.', 'error');
           return;
         }
         try {
           const data = await postJson('/signup', { username, password });
           token = data.token;
+          persistToken(token);
           await fetchProfile();
-          setStatus('Account created! A new hand awaits.', 'success');
+          setStatus('Compte créé ! Une nouvelle main vous attend.', 'success');
         } catch (error) {
           setStatus(error.message, 'error');
         }
@@ -852,14 +999,15 @@ INDEX_HTML = """
         const username = document.getElementById('login-username').value.trim();
         const password = document.getElementById('login-password').value.trim();
         if (!username || !password) {
-          setStatus('Enter username and password to log in.', 'error');
+          setStatus('Entrez vos identifiants pour vous connecter.', 'error');
           return;
         }
         try {
           const data = await postJson('/login', { username, password });
           token = data.token;
+          persistToken(token);
           await fetchProfile();
-          setStatus('Logged in. Ready to wager!', 'success');
+          setStatus('Connexion réussie. Bonne chance !', 'success');
         } catch (error) {
           setStatus(error.message, 'error');
         }
@@ -868,29 +1016,31 @@ INDEX_HTML = """
       document.getElementById('guest-button').addEventListener('click', () => {
         token = null;
         profile = null;
+        persistToken(null);
         updateAuthUI();
-        setStatus('Guest mode activated. Bets are disabled, but play on!', 'info');
+        setStatus('Mode invité activé. Les mises sont à zéro.', 'info');
       });
 
       logoutButton.addEventListener('click', () => {
         token = null;
         profile = null;
+        persistToken(null);
         updateAuthUI();
-        setStatus('You have logged out.', 'info');
+        setStatus('Vous êtes déconnecté.', 'info');
       });
 
       document.getElementById('start-form').addEventListener('submit', async (event) => {
         event.preventDefault();
         const bet = parseInt(betInput.value, 10) || 0;
         if (!profile && bet > 0) {
-          setStatus('Guests must leave the bet at $0.', 'error');
+          setStatus('Les invités doivent laisser la mise à 0.', 'error');
           return;
         }
         try {
           const data = await postJson('/game/start', { bet });
           handleGameState(data);
           clearChipSelection();
-          setStatus('Hand dealt — good luck!', 'success');
+          setStatus('Cartes distribuées — bonne chance !', 'success');
         } catch (error) {
           setStatus(error.message, 'error');
         }
@@ -898,13 +1048,13 @@ INDEX_HTML = """
 
       hitButton.addEventListener('click', async () => {
         if (!sessionId) {
-          setStatus('Start a hand first.', 'error');
+          setStatus('Commencez une main avant de tirer.', 'error');
           return;
         }
         try {
           const data = await postJson('/game/hit', { session_id: sessionId });
           handleGameState(data);
-          setStatus('Card drawn.', 'info');
+          setStatus('Carte piochée.', 'info');
         } catch (error) {
           setStatus(error.message, 'error');
         }
@@ -912,13 +1062,13 @@ INDEX_HTML = """
 
       standButton.addEventListener('click', async () => {
         if (!sessionId) {
-          setStatus('Start a hand first.', 'error');
+          setStatus('Commencez une main avant de rester.', 'error');
           return;
         }
         try {
           const data = await postJson('/game/stand', { session_id: sessionId });
           handleGameState(data);
-          setStatus('Hand resolved.', 'info');
+          setStatus('Main résolue.', 'info');
         } catch (error) {
           setStatus(error.message, 'error');
         }
@@ -928,7 +1078,7 @@ INDEX_HTML = """
         button.addEventListener('click', () => {
           const amount = parseInt(button.dataset.chip, 10) || 0;
           if (!profile) {
-            setStatus('Sign in to wager with chips.', 'warning');
+            setStatus('Connectez-vous pour miser avec des jetons.', 'warning');
             return;
           }
           betInput.value = amount;
@@ -937,8 +1087,22 @@ INDEX_HTML = """
         });
       });
 
+      document.addEventListener('gesturestart', (event) => {
+        event.preventDefault();
+      });
+
+      document.addEventListener('dblclick', (event) => {
+        if (event.target.closest('button, input')) {
+          event.preventDefault();
+        }
+      });
+
       updateAuthUI();
-      setStatus('Play as a guest or sign in to start betting.');
+      if (token) {
+        fetchProfile();
+      } else {
+        setStatus('Jouez en invité ou connectez-vous pour miser.');
+      }
     </script>
   </body>
 </html>
@@ -949,3 +1113,4 @@ INDEX_HTML = """
 def index() -> str:
     """Serve the responsive Blackjack frontend."""
     return INDEX_HTML
+
