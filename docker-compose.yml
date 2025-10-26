@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  blackjack:
+    build: .
+    container_name: openblackjack
+    ports:
+      - "3666:3666"
+    volumes:
+      - blackjack_data:/app/data
+    environment:
+      - UVICORN_RELOAD=false
+    restart: unless-stopped
+
+volumes:
+  blackjack_data:
