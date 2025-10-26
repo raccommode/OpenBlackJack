@@ -36,6 +36,10 @@ INDEX_HTML = """
         --shadow: rgba(7, 11, 27, 0.55);
       }
 
+      html {
+        height: 100%;
+      }
+
       * {
         box-sizing: border-box;
       }
@@ -48,6 +52,9 @@ INDEX_HTML = """
           linear-gradient(150deg, #001219 0%, #020617 55%, #010409 100%);
         color: var(--text-primary);
         min-height: 100vh;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
 
       .app-shell {
@@ -57,7 +64,7 @@ INDEX_HTML = """
         display: flex;
         flex-direction: column;
         gap: 1.75rem;
-        min-height: 100vh;
+        flex: 1 1 auto;
       }
 
       .app-header {
@@ -120,6 +127,7 @@ INDEX_HTML = """
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+        flex: 1 1 auto;
       }
 
       .panel {
@@ -148,7 +156,7 @@ INDEX_HTML = """
 
       .table-surface {
         position: relative;
-        min-height: 340px;
+        min-height: 420px;
         border-radius: 24px;
         padding: clamp(1.25rem, 4vw, 2rem);
         border: 1px solid rgba(148, 163, 184, 0.2);
@@ -156,11 +164,14 @@ INDEX_HTML = """
           radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.18), transparent 45%),
           linear-gradient(160deg, rgba(4, 30, 49, 0.82), rgba(1, 27, 43, 0.88));
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
       }
 
       #phaser-stage {
         width: 100%;
         height: 100%;
+        flex: 1 1 auto;
       }
 
       .table-overlay {
@@ -171,6 +182,21 @@ INDEX_HTML = """
         flex-direction: column;
         justify-content: space-between;
         padding: clamp(1rem, 3vw, 1.75rem);
+      }
+
+      .overlay-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        pointer-events: none;
+      }
+
+      .overlay-bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        pointer-events: none;
       }
 
       .hand-meta {
@@ -197,6 +223,128 @@ INDEX_HTML = """
         color: var(--text-muted);
         font-size: 0.8rem;
         letter-spacing: 0.02em;
+      }
+
+      .player-hands-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 0.85rem;
+        pointer-events: none;
+      }
+
+      .player-hand-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 18px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .player-hand-card--active {
+        border-color: rgba(34, 211, 238, 0.6);
+        box-shadow: 0 12px 32px rgba(14, 165, 233, 0.18);
+      }
+
+      .player-hand-card h3 {
+        margin: 0;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+      }
+
+      .player-hand-card .hand-total {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      .player-hand-card .hand-status {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .bet-spots {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        pointer-events: none;
+      }
+
+      .bet-spot {
+        pointer-events: auto;
+        border: 2px dashed rgba(34, 211, 238, 0.4);
+        border-radius: 999px;
+        padding: 0.7rem 1.4rem;
+        background: rgba(14, 165, 233, 0.12);
+        color: var(--accent);
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        transition: transform 0.2s ease, background 0.2s ease, border 0.2s ease;
+      }
+
+      .bet-spot:hover {
+        background: rgba(14, 165, 233, 0.2);
+        transform: translateY(-1px);
+      }
+
+      .bet-spot:focus-visible {
+        outline: none;
+        border-color: var(--accent-strong);
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25);
+      }
+
+      .bet-spot--locked {
+        cursor: not-allowed;
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      .bet-spot__label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .bet-spot__amount {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .sidebet-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        pointer-events: none;
+      }
+
+      .sidebet-chip {
+        background: rgba(15, 23, 42, 0.55);
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        padding: 0.45rem 0.75rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.04em;
+      }
+
+      .sidebet-chip[data-result='win'] {
+        border-color: rgba(52, 211, 153, 0.5);
+        color: var(--success);
+      }
+
+      .sidebet-chip[data-result='loss'] {
+        border-color: rgba(248, 113, 113, 0.45);
+        color: var(--danger);
+      }
+
+      .sidebet-chip[data-result='inactive'] {
+        color: var(--text-muted);
       }
 
       .hand-meta.hand--concealed .hand-total {
@@ -363,6 +511,20 @@ INDEX_HTML = """
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem;
+      }
+
+      .action-buttons button {
+        flex: 1 1 160px;
+      }
+
+      .aux-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+      }
+
+      .aux-actions button {
+        flex: 1 1 160px;
       }
 
       .muted {
@@ -649,16 +811,31 @@ INDEX_HTML = """
           <div class=\"table-surface\">
             <div id=\"phaser-stage\" aria-hidden=\"true\"></div>
             <div class=\"table-overlay\">
-              <div class=\"hand-meta\" id=\"dealer-info\">
-                <h3>DEALER</h3>
-                <p class=\"hand-total\">En attente…</p>
-                <span class=\"hand-status\"></span>
+              <div class=\"overlay-top\">
+                <div class=\"hand-meta\" id=\"dealer-info\">
+                  <h3>DEALER</h3>
+                  <p class=\"hand-total\">En attente…</p>
+                  <span class=\"hand-status\"></span>
+                </div>
+                <div class=\"sidebet-summary\" id=\"sidebet-summary\" aria-live=\"polite\"></div>
               </div>
-              <div class=\"session-id\" id=\"session-info\">Session <span>—</span></div>
-              <div class=\"hand-meta\" id=\"player-info\">
-                <h3>JOUEUR</h3>
-                <p class=\"hand-total\">En attente…</p>
-                <span class=\"hand-status\"></span>
+              <div class=\"bet-spots\" role=\"group\" aria-label=\"Zones de mise\">
+                <button type=\"button\" class=\"bet-spot\" data-spot=\"main\">
+                  <span class=\"bet-spot__label\">Mise principale</span>
+                  <span class=\"bet-spot__amount\" data-spot-amount=\"main\">0</span>
+                </button>
+                <button type=\"button\" class=\"bet-spot\" data-spot=\"pair\">
+                  <span class=\"bet-spot__label\">Paire</span>
+                  <span class=\"bet-spot__amount\" data-spot-amount=\"pair\">0</span>
+                </button>
+                <button type=\"button\" class=\"bet-spot\" data-spot=\"suited_pair\">
+                  <span class=\"bet-spot__label\">Paire assortie</span>
+                  <span class=\"bet-spot__amount\" data-spot-amount=\"suited_pair\">0</span>
+                </button>
+              </div>
+              <div class=\"overlay-bottom\">
+                <div class=\"player-hands-grid\" id=\"player-hands-info\"></div>
+                <div class=\"session-id\" id=\"session-info\">Session <span>—</span></div>
               </div>
             </div>
             <div class=\"auth-overlay\" id=\"auth-overlay\" aria-hidden=\"true\">
@@ -701,8 +878,8 @@ INDEX_HTML = """
 
             <form id=\"start-form\">
               <div class=\"bet-controls\">
-                <label for=\"bet\">Mise (crédits)
-                  <input id=\"bet\" type=\"number\" min=\"0\" step=\"10\" value=\"0\" />
+                <label for=\"bet\">Mise principale
+                  <input id=\"bet\" type=\"number\" min=\"0\" step=\"10\" value=\"0\" readonly />
                 </label>
                 <div class=\"chip-row\">
                   <button type=\"button\" class=\"chip-button\" data-chip=\"10\">10</button>
@@ -715,6 +892,12 @@ INDEX_HTML = """
                 <button class=\"primary\" type=\"submit\">Distribuer</button>
                 <button class=\"secondary\" type=\"button\" id=\"hit-button\" disabled>Carte !</button>
                 <button class=\"secondary\" type=\"button\" id=\"stand-button\" disabled>Rester</button>
+                <button class=\"secondary\" type=\"button\" id=\"double-button\" disabled>Double</button>
+                <button class=\"secondary\" type=\"button\" id=\"split-button\" disabled>Séparer</button>
+              </div>
+              <div class=\"aux-actions\">
+                <button class=\"secondary\" type=\"button\" id=\"clear-bets\">Réinitialiser les mises</button>
+                <button class=\"secondary\" type=\"button\" id=\"fullscreen-button\">Plein écran</button>
               </div>
             </form>
 
@@ -724,7 +907,7 @@ INDEX_HTML = """
               <button class=\"secondary hidden\" type=\"button\" id=\"logout-button\" disabled>Se déconnecter</button>
             </div>
             <p class=\"muted\">
-              Les comptes sauvegardent vos crédits et permettent les mises. En invité, les mises sont bloquées.
+              Sélectionnez un jeton puis cliquez sur une zone de mise pour placer vos crédits. Clic droit retire le jeton actif. Les comptes sauvegardent vos crédits et permettent les mises. En invité, les mises sont bloquées.
             </p>
           </div>
         </section>
@@ -740,7 +923,7 @@ INDEX_HTML = """
         constructor(mountId) {
           this.mountId = mountId;
           this.scene = null;
-          this.cardSprites = { player: [], dealer: [] };
+          this.cardSprites = {};
           this.pendingState = null;
           if (!window.Phaser) {
             return;
@@ -766,8 +949,8 @@ INDEX_HTML = """
                 animator.scene = this;
                 animator.buildTable();
                 if (animator.pendingState) {
-                  const { player, dealer, options } = animator.pendingState;
-                  animator.updateHands(player, dealer, options);
+                  const { playerHands, dealer, options } = animator.pendingState;
+                  animator.updateHands(playerHands, dealer, options);
                   animator.pendingState = null;
                 }
               },
@@ -819,9 +1002,9 @@ INDEX_HTML = """
           });
         }
 
-        ensureSceneReady(player, dealer, options) {
+        ensureSceneReady(playerHands, dealer, options) {
           if (!this.scene) {
-            this.pendingState = { player, dealer, options };
+            this.pendingState = { playerHands, dealer, options };
             return false;
           }
           return true;
@@ -887,12 +1070,23 @@ INDEX_HTML = """
           container.setData('hidden', hidden);
         }
 
-        updateHands(player, dealer, options = {}) {
-          if (!this.ensureSceneReady(player, dealer, options)) {
+        updateHands(playerHands, dealer, options = {}) {
+          if (!this.ensureSceneReady(playerHands, dealer, options)) {
             return;
           }
           this.syncHand('dealer', dealer.cards, { hideHoleCard: options.hideHoleCard, y: 110 });
-          this.syncHand('player', player.cards, { hideHoleCard: false, y: this.scene.scale.height - 110 });
+          const activeKeys = new Set();
+          playerHands.forEach((hand, index) => {
+            const key = `player-${index}`;
+            activeKeys.add(key);
+            const rowSpacing = 110;
+            const baseY = this.scene ? this.scene.scale.height - 110 : 0;
+            const y = baseY - index * rowSpacing;
+            this.syncHand(key, hand.cards, { hideHoleCard: false, y });
+          });
+          Object.keys(this.cardSprites)
+            .filter((key) => key.startsWith('player-') && !activeKeys.has(key))
+            .forEach((key) => this.teardownHand(key));
         }
 
         syncHand(owner, cards, config) {
@@ -902,7 +1096,8 @@ INDEX_HTML = """
           }
           const spacing = 110;
           const baseX = scene.scale.width / 2 - ((cards.length - 1) * spacing) / 2;
-          const existing = this.cardSprites[owner];
+          const existing = this.cardSprites[owner] || [];
+          this.cardSprites[owner] = existing;
           while (existing.length > cards.length) {
             const sprite = existing.pop();
             if (sprite.container) {
@@ -974,6 +1169,21 @@ INDEX_HTML = """
           });
         }
 
+        teardownHand(owner) {
+          const scene = this.scene;
+          const sprites = this.cardSprites[owner];
+          if (!scene || !sprites) {
+            return;
+          }
+          sprites.forEach((sprite) => {
+            if (sprite.container) {
+              sprite.container.removeAll(true);
+              sprite.container.destroy();
+            }
+          });
+          delete this.cardSprites[owner];
+        }
+
         revealCard(container, card) {
           const scene = this.scene;
           if (!scene) {
@@ -1002,10 +1212,16 @@ INDEX_HTML = """
       const sessionInfoEl = document.getElementById('session-info');
       const outcomeEl = document.getElementById('outcome');
       const dealerInfoEl = document.getElementById('dealer-info');
-      const playerInfoEl = document.getElementById('player-info');
+      const playerHandsContainer = document.getElementById('player-hands-info');
+      const sidebetSummaryEl = document.getElementById('sidebet-summary');
       const betInput = document.getElementById('bet');
       const hitButton = document.getElementById('hit-button');
       const standButton = document.getElementById('stand-button');
+      const doubleButton = document.getElementById('double-button');
+      const splitButton = document.getElementById('split-button');
+      const clearBetsButton = document.getElementById('clear-bets');
+      const fullscreenButton = document.getElementById('fullscreen-button');
+      const betSpotButtons = Array.from(document.querySelectorAll('.bet-spot'));
       const logoutButton = document.getElementById('logout-button');
       const guestButton = document.getElementById('guest-button');
       const authOpenButton = document.getElementById('auth-open');
@@ -1025,6 +1241,14 @@ INDEX_HTML = """
       let token = window.localStorage.getItem('openblackjack_token');
       let profile = null;
       let sessionId = null;
+      let lastState = null;
+      let bettingLocked = false;
+      let selectedChip = null;
+      const betSpotsState = {
+        main: 0,
+        pair: 0,
+        suited_pair: 0,
+      };
 
       function persistToken(value) {
         if (!value) {
@@ -1039,6 +1263,33 @@ INDEX_HTML = """
           return {};
         }
         return { Authorization: `Bearer ${token}` };
+      }
+
+      function updateBetSpotDisplays() {
+        betInput.value = betSpotsState.main;
+        betSpotButtons.forEach((button) => {
+          const spot = button.dataset.spot;
+          const amountLabel = button.querySelector('[data-spot-amount]');
+          const amount = betSpotsState[spot] || 0;
+          if (amountLabel) {
+            amountLabel.textContent = formatCurrency(amount);
+          }
+          button.classList.toggle('bet-spot--locked', bettingLocked);
+        });
+      }
+
+      function resetBetSpots() {
+        betSpotsState.main = 0;
+        betSpotsState.pair = 0;
+        betSpotsState.suited_pair = 0;
+        updateBetSpotDisplays();
+        selectedChip = null;
+        clearChipSelection();
+      }
+
+      function setBettingLocked(lock) {
+        bettingLocked = lock;
+        updateBetSpotDisplays();
       }
 
       function formatCurrency(value) {
@@ -1109,6 +1360,7 @@ INDEX_HTML = """
           dealer_win: 'outcome--loss',
           player_bust: 'outcome--loss',
           push: 'outcome--push',
+          mixed: 'outcome--push',
         }[outcome];
         if (tone) {
           outcomeEl.classList.add(tone);
@@ -1117,6 +1369,7 @@ INDEX_HTML = """
 
       function clearChipSelection() {
         chipButtons.forEach((button) => button.classList.remove('chip-button--active'));
+        selectedChip = null;
       }
 
       function updateAuthUI() {
@@ -1125,6 +1378,7 @@ INDEX_HTML = """
           logoutButton.disabled = false;
           logoutButton.classList.remove('hidden');
           betInput.disabled = false;
+          setBettingLocked(false);
           if (authOpenButton) {
             authOpenButton.classList.add('hidden');
             authOpenButton.disabled = true;
@@ -1140,7 +1394,8 @@ INDEX_HTML = """
           logoutButton.classList.add('hidden');
           betInput.value = '0';
           betInput.disabled = true;
-          clearChipSelection();
+          resetBetSpots();
+          setBettingLocked(true);
           if (authOpenButton) {
             authOpenButton.classList.remove('hidden');
             authOpenButton.disabled = false;
@@ -1155,27 +1410,107 @@ INDEX_HTML = """
         }
       }
 
-      function updateHandInfo(element, hand, options = {}) {
-        const totalEl = element.querySelector('.hand-total');
-        const statusEl = element.querySelector('.hand-status');
+      function updateDealerInfo(hand, options = {}) {
+        if (!dealerInfoEl) {
+          return;
+        }
+        const totalEl = dealerInfoEl.querySelector('.hand-total');
+        const statusEl = dealerInfoEl.querySelector('.hand-status');
         if (!totalEl || !statusEl) {
           return;
         }
         if (!hand.cards.length) {
           totalEl.textContent = 'En attente…';
           statusEl.textContent = '';
-          element.classList.remove('hand--concealed');
+          dealerInfoEl.classList.remove('hand--concealed');
           return;
         }
         if (options.hideHoleCard) {
           totalEl.textContent = 'Total : ??';
           statusEl.textContent = 'Le croupier cache une carte.';
-          element.classList.add('hand--concealed');
+          dealerInfoEl.classList.add('hand--concealed');
         } else {
           totalEl.textContent = `Total : ${hand.value}`;
           statusEl.textContent = '';
-          element.classList.remove('hand--concealed');
+          dealerInfoEl.classList.remove('hand--concealed');
         }
+      }
+
+      function renderPlayerHands(hands) {
+        if (!playerHandsContainer) {
+          return;
+        }
+        playerHandsContainer.innerHTML = '';
+        if (!hands.length) {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'player-hand-card';
+          placeholder.innerHTML = '<h3>JOUEUR</h3><div class="hand-total">En attente…</div>';
+          playerHandsContainer.appendChild(placeholder);
+          return;
+        }
+        hands.forEach((hand, index) => {
+          const card = document.createElement('div');
+          card.className = 'player-hand-card';
+          if (hand.is_active) {
+            card.classList.add('player-hand-card--active');
+          }
+          const title = document.createElement('h3');
+          title.textContent = `Main ${index + 1}`;
+          const total = document.createElement('div');
+          total.className = 'hand-total';
+          total.textContent = `Total : ${hand.value}`;
+          const bet = document.createElement('div');
+          bet.className = 'hand-status';
+          const betLabel = hand.is_doubled ? 'Mise (doublée)' : 'Mise';
+          bet.textContent = `${betLabel} : ${formatCurrency(hand.bet)}`;
+          if (hand.result) {
+            const resultMap = {
+              player_blackjack: 'Blackjack !',
+              player_win: 'Victoire',
+              dealer_bust: 'Croupier saute',
+              dealer_win: 'Défaite',
+              dealer_blackjack: 'Blackjack du croupier',
+              player_bust: 'Buste',
+              push: 'Égalité',
+            };
+            const result = document.createElement('div');
+            result.className = 'hand-status';
+            result.textContent = `Résultat : ${resultMap[hand.result] || hand.result.replace('_', ' ')}`;
+            card.append(title, total, bet, result);
+          } else {
+            card.append(title, total, bet);
+          }
+          playerHandsContainer.appendChild(card);
+        });
+      }
+
+      function renderSideBets(sideBets) {
+        if (!sidebetSummaryEl) {
+          return;
+        }
+        sidebetSummaryEl.innerHTML = '';
+        const entries = Object.entries(sideBets || {});
+        if (!entries.length) {
+          return;
+        }
+        entries.forEach(([key, info]) => {
+          if (!info || (!info.bet && info.result === 'inactive')) {
+            return;
+          }
+          const chip = document.createElement('span');
+          chip.className = 'sidebet-chip';
+          chip.dataset.result = info.result || 'inactive';
+          const label = info.label || key;
+          const amount = formatCurrency(info.bet || 0);
+          const payout = info.payout ? formatCurrency(info.payout) : null;
+          if (info.description) {
+            chip.title = info.description;
+          }
+          chip.textContent = payout && info.result === 'win'
+            ? `${label}: ${amount} → ${payout}`
+            : `${label}: ${amount}`;
+          sidebetSummaryEl.appendChild(chip);
+        });
       }
 
       function formatOutcome(outcome, isOver) {
@@ -1190,6 +1525,7 @@ INDEX_HTML = """
           dealer_win: 'Le croupier gagne.',
           player_bust: 'Vous dépassez 21 — perdu.',
           push: "Egalité — la mise est rendue.",
+          mixed: 'Résultats mixtes — vérifiez chaque main.',
         };
         return mapping[outcome] || outcome.replace('_', ' ');
       }
@@ -1238,14 +1574,18 @@ INDEX_HTML = """
 
       function handleGameState(data) {
         sessionId = data.session_id;
+        lastState = data;
         const shortId = sessionId ? sessionId.slice(0, 8) : '—';
-        const betLabel = data.bet ? ` • Mise : ${formatCurrency(data.bet)}` : '';
+        const sideBetTotal = Object.values(data.side_bets || {}).reduce((sum, entry) => sum + (entry.bet || 0), 0);
+        const totalWager = (data.bet || 0) + sideBetTotal;
+        const betLabel = totalWager ? ` • Mises : ${formatCurrency(totalWager)}` : '';
         sessionInfoEl.innerHTML = `Session <span>${shortId}${sessionId ? '…' : ''}</span>${betLabel}`;
         const hideDealerCard = !data.is_over && data.dealer_hand.cards.length > 1;
-        updateHandInfo(playerInfoEl, data.player_hand);
-        updateHandInfo(dealerInfoEl, data.dealer_hand, { hideHoleCard: hideDealerCard });
+        updateDealerInfo(data.dealer_hand, { hideHoleCard: hideDealerCard });
+        renderPlayerHands(data.player_hands || []);
+        renderSideBets(data.side_bets || {});
         if (animator) {
-          animator.updateHands(data.player_hand, data.dealer_hand, { hideHoleCard: hideDealerCard });
+          animator.updateHands(data.player_hands || [], data.dealer_hand, { hideHoleCard: hideDealerCard });
         }
         outcomeEl.textContent = formatOutcome(data.outcome, data.is_over);
         updateOutcomeTone(data.outcome);
@@ -1253,9 +1593,16 @@ INDEX_HTML = """
           profile.balance = data.balance;
           updateAuthUI();
         }
-        const actionEnabled = !data.is_over;
-        hitButton.disabled = !actionEnabled;
-        standButton.disabled = !actionEnabled;
+        const activeHand =
+          typeof data.active_hand_index === 'number' && data.player_hands
+            ? data.player_hands[data.active_hand_index]
+            : null;
+        const canAct = Boolean(activeHand) && !activeHand.result && !data.is_over;
+        hitButton.disabled = !canAct;
+        standButton.disabled = !canAct;
+        doubleButton.disabled = !canAct || !activeHand?.can_double || !profile;
+        splitButton.disabled = !canAct || !activeHand?.can_split || !profile;
+        setBettingLocked(profile ? !data.is_over : true);
         return data;
       }
 
@@ -1321,13 +1668,25 @@ INDEX_HTML = """
 
       document.getElementById('start-form').addEventListener('submit', async (event) => {
         event.preventDefault();
-        const bet = parseInt(betInput.value, 10) || 0;
-        if (!profile && bet > 0) {
+        if (lastState && !lastState.is_over) {
+          setStatus('Terminez la main actuelle avant de redistribuer.', 'warning');
+          return;
+        }
+        const mainBet = betSpotsState.main || 0;
+        const sideBetsPayload = {};
+        ['pair', 'suited_pair'].forEach((key) => {
+          const value = betSpotsState[key];
+          if (value) {
+            sideBetsPayload[key] = value;
+          }
+        });
+        const total = mainBet + Object.values(sideBetsPayload).reduce((sum, value) => sum + value, 0);
+        if (!profile && total > 0) {
           setStatus('Les invités doivent laisser la mise à 0.', 'error');
           return;
         }
         try {
-          const data = await postJson('/game/start', { bet });
+          const data = await postJson('/game/start', { bet: mainBet, side_bets: sideBetsPayload });
           handleGameState(data);
           clearChipSelection();
           setStatus('Cartes distribuées — bonne chance !', 'success');
@@ -1337,12 +1696,15 @@ INDEX_HTML = """
       });
 
       hitButton.addEventListener('click', async () => {
-        if (!sessionId) {
+        if (!sessionId || !lastState || typeof lastState.active_hand_index !== 'number') {
           setStatus('Commencez une main avant de tirer.', 'error');
           return;
         }
         try {
-          const data = await postJson('/game/hit', { session_id: sessionId });
+          const data = await postJson('/game/hit', {
+            session_id: sessionId,
+            hand_index: lastState.active_hand_index,
+          });
           handleGameState(data);
           setStatus('Carte piochée.', 'info');
         } catch (error) {
@@ -1351,14 +1713,51 @@ INDEX_HTML = """
       });
 
       standButton.addEventListener('click', async () => {
-        if (!sessionId) {
+        if (!sessionId || !lastState || typeof lastState.active_hand_index !== 'number') {
           setStatus('Commencez une main avant de rester.', 'error');
           return;
         }
         try {
-          const data = await postJson('/game/stand', { session_id: sessionId });
+          const data = await postJson('/game/stand', {
+            session_id: sessionId,
+            hand_index: lastState.active_hand_index,
+          });
           handleGameState(data);
           setStatus('Main résolue.', 'info');
+        } catch (error) {
+          setStatus(error.message, 'error');
+        }
+      });
+
+      doubleButton.addEventListener('click', async () => {
+        if (!sessionId || !lastState || typeof lastState.active_hand_index !== 'number') {
+          setStatus('Aucune main active à doubler.', 'error');
+          return;
+        }
+        try {
+          const data = await postJson('/game/double', {
+            session_id: sessionId,
+            hand_index: lastState.active_hand_index,
+          });
+          handleGameState(data);
+          setStatus('Double appliqué.', 'info');
+        } catch (error) {
+          setStatus(error.message, 'error');
+        }
+      });
+
+      splitButton.addEventListener('click', async () => {
+        if (!sessionId || !lastState || typeof lastState.active_hand_index !== 'number') {
+          setStatus('Aucune main active à séparer.', 'error');
+          return;
+        }
+        try {
+          const data = await postJson('/game/split', {
+            session_id: sessionId,
+            hand_index: lastState.active_hand_index,
+          });
+          handleGameState(data);
+          setStatus('Main séparée.', 'info');
         } catch (error) {
           setStatus(error.message, 'error');
         }
@@ -1371,11 +1770,73 @@ INDEX_HTML = """
             setStatus('Connectez-vous pour miser avec des jetons.', 'warning');
             return;
           }
-          betInput.value = amount;
           clearChipSelection();
+          selectedChip = amount;
           button.classList.add('chip-button--active');
         });
       });
+
+      betSpotButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          if (bettingLocked) {
+            setStatus('Les mises sont verrouillées pendant la main en cours.', 'warning');
+            return;
+          }
+          if (!profile) {
+            setStatus('Connectez-vous pour placer des mises.', 'warning');
+            return;
+          }
+          if (!selectedChip) {
+            setStatus('Choisissez un jeton avant de miser.', 'warning');
+            return;
+          }
+          const spot = button.dataset.spot;
+          betSpotsState[spot] = (betSpotsState[spot] || 0) + selectedChip;
+          updateBetSpotDisplays();
+        });
+        button.addEventListener('contextmenu', (event) => {
+          event.preventDefault();
+          if (bettingLocked) {
+            setStatus('Les mises sont verrouillées pendant la main en cours.', 'warning');
+            return;
+          }
+          const spot = button.dataset.spot;
+          if (!selectedChip) {
+            betSpotsState[spot] = 0;
+          } else {
+            betSpotsState[spot] = Math.max(0, (betSpotsState[spot] || 0) - selectedChip);
+          }
+          updateBetSpotDisplays();
+        });
+      });
+
+      if (clearBetsButton) {
+        clearBetsButton.addEventListener('click', () => {
+          if (bettingLocked) {
+            setStatus('Attendez la fin de la main pour ajuster vos mises.', 'warning');
+            return;
+          }
+          resetBetSpots();
+          setStatus('Mises réinitialisées.', 'info');
+        });
+      }
+
+      if (fullscreenButton) {
+        const updateFullscreenLabel = () => {
+          fullscreenButton.textContent = document.fullscreenElement
+            ? 'Quitter le plein écran'
+            : 'Plein écran';
+        };
+        fullscreenButton.addEventListener('click', () => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen?.();
+          } else {
+            document.exitFullscreen?.();
+          }
+        });
+        document.addEventListener('fullscreenchange', updateFullscreenLabel);
+        updateFullscreenLabel();
+      }
 
       authTabButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -1427,6 +1888,9 @@ INDEX_HTML = """
         }
       });
 
+      updateBetSpotDisplays();
+      renderPlayerHands([]);
+      renderSideBets({});
       updateAuthUI();
       if (token) {
         fetchProfile();
