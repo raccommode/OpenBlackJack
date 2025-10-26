@@ -1,14 +1,13 @@
 # OpenBlackJack
 
-OpenBlackJack is a single-player Blackjack API built with FastAPI. It supports guest games, account creation with automatic $1000 credit, and persistent balances backed by SQLite. Automatic backups are created inside the container while the service is running.
+OpenBlackJack is a single-player Blackjack API built with FastAPI alongside a mobile-first web client. The default interface plays entirely in the browser, saving your bankroll locally for instant, account-free sessions while the API still exposes authentication endpoints for integrations. Automatic backups are created inside the container while the service is running.
 
 ## Features
 
-- Casino-style 8-deck Blackjack shoe with hit and stand actions
-- Responsive web interface served from `/` for instant play on desktop and mobile
-- Optional authentication with username and password (no email required)
-- Automatic $1000 credit on signup and balance tracking for authenticated users
-- Guest games without signup or login
+- Casino-style 8-deck Blackjack shoe with hit, stand, double, and split actions
+- Responsive web interface served from `/` and tuned for portrait play on iPhone and other mobiles
+- Browser-saved bankroll with automatic persistence via local storage—no signup or connection required
+- Optional authentication endpoints remain available for API clients that want server-side balance tracking
 - Automatic SQLite backups created every minute
 - Dockerized deployment with persistent volume for data and backups
 
@@ -27,9 +26,11 @@ OpenBlackJack is a single-player Blackjack API built with FastAPI. It supports g
 - `POST /signup` – Create a new account and receive an access token
 - `POST /login` – Obtain a token for an existing account
 - `GET /me` – Retrieve the authenticated user's profile and balance
-- `POST /game/start` – Start a new Blackjack session (optional bet when authenticated)
+- `POST /game/start` – Start a new Blackjack session (bets accepted for all players; authenticated users have server-side balances)
 - `POST /game/hit` – Draw another card in the active session
 - `POST /game/stand` – Finish the hand and resolve the bet
+- `POST /game/double` – Double the stake on the active hand (requires sufficient balance when authenticated)
+- `POST /game/split` – Split the active pair into two hands (requires sufficient balance when authenticated)
 - `GET /game/{session_id}` – Retrieve the current state of a session
 - `GET /health` – Lightweight health check
 
