@@ -68,6 +68,25 @@ INDEX_HTML = """
       h1 {
         margin: 0;
         font-size: clamp(2rem, 6vw, 3.1rem);
+        font-family: \"Inter\", \"Segoe UI\", Roboto, sans-serif;
+        background: linear-gradient(160deg, #000428, #004e92);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.5rem;
+      }
+
+      header {
+        width: min(100%, 1100px);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        margin-bottom: 0.25rem;
         letter-spacing: 0.08em;
         text-transform: uppercase;
       }
